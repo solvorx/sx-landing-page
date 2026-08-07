@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.claude
+assets/large-thumbnail20250814-334114-1gfhosq.mp4
+public/media/demo.mp4

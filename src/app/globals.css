@@ -1,26 +1,117 @@
 @import "tailwindcss";
 
+@theme {
+  /* Paleta de marca SolvorX */
+  --color-brand-blue: #0063b5;
+  --color-brand-teal: #20868e;
+  --color-brand-magenta: #dc067a;
+  --color-brand-amber: #ffa500;
+  --color-brand-ink: #1d0639;
+
+  /* Tinta del logo sobre fondo claro */
+  --color-brand-slate: #050a1e;
+
+  --font-sans: var(--font-inter);
+  --font-display: var(--font-poppins);
+
+  --radius-4xl: 2rem;
+  --radius-5xl: 2.5rem;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #ffffff;
+  color: var(--color-brand-slate);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* Foco visible y consistente en todo lo interactivo */
+:where(a, button, summary, input, textarea):focus-visible {
+  outline: 2px solid var(--color-brand-blue);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+/*
+ * Geometría de la portada. Ajustar la portada = ajustar estas variables.
+ *
+ * El bloque oscuro llega hasta el borde inferior de la pantalla y su borde
+ * inferior es recto. La diagonal arranca al 15% del margen derecho y baja a
+ * 45°: como el avance horizontal (--poly-run) es igual al recorrido vertical
+ * del bloque, el ángulo es exactamente 45° a cualquier tamaño de pantalla.
+ * Subir --poly-run inclina la diagonal; bajarlo la empina.
+ */
+.hero {
+  --header-h: 5rem;
+  --hero-h: max(100svh, 620px);
+  --sx-h: 80%; /* alto del isotipo SX */
+  --sx-left: 10%; /* separación desde el margen izquierdo */
+  --poly-top-x: 85%; /* la diagonal arranca al 15% del margen derecho */
+  --poly-run: calc(var(--hero-h) - var(--header-h)); /* 45° */
+  --poly-clip: polygon(
+    var(--poly-top-x) 0,
+    100% 0,
+    100% 100%,
+    calc(var(--poly-top-x) - var(--poly-run)) 100%
+  );
+  /*
+   * Alto al que empieza el titular. El borde izquierdo del texto se calcula
+   * desde aquí siguiendo la propia diagonal, así que nunca cae sobre el blanco.
+   */
+  --text-top: calc(var(--hero-h) * 0.45);
+  --text-left: calc(
+    var(--poly-top-x) - (var(--text-top) - var(--header-h)) + 2rem
+  );
+  --sx-display: block;
+}
+
+/*
+ * A 45° el avance horizontal de la diagonal es igual al alto de la pantalla,
+ * así que en formatos altos o estrechos el polígono tapa casi todo el isotipo
+ * y lo poco que asoma queda oscuro sobre oscuro. Ahí se oculta (es decorativo).
+ */
+@media (width < 1024px), (aspect-ratio < 5/4) {
+  .hero {
+    --sx-display: none;
+  }
+}
+
+/*
+ * Por debajo de 1280px la diagonal al 85% deja demasiado poco espacio oscuro
+ * para el titular, así que se adelanta al 70% y el isotipo se reduce.
+ */
+@media (width < 1280px) {
+  .hero {
+    --sx-h: 58%;
+    --sx-left: 8%;
+    --poly-top-x: 70%;
+  }
+}
+
+/*
+ * En móvil no cabe la composición del boceto: el isotipo se oculta (es
+ * decorativo) y la diagonal se vuelve una inclinación suave del borde
+ * superior, para que el texto blanco quede siempre sobre el bloque oscuro.
+ */
+@media (width < 768px) {
+  .hero {
+    --header-h: 4.25rem;
+    --poly-clip: polygon(0 14%, 100% 0, 100% 100%, 0 100%);
+  }
 }

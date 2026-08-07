@@ -1,36 +1,38 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SolvorX — landing
 
-## Getting Started
-
-First, run the development server:
+Landing page de SolvorX. Next.js 16 (App Router) + TypeScript + Tailwind v4 + `motion`.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+pnpm dev     # http://localhost:3000
+pnpm build
+pnpm lint
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Dónde tocar qué
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Todo el contenido** (copy, nav, features, bento, pasos, FAQ, footer, datos de
+  la empresa) vive en [`src/lib/site.ts`](src/lib/site.ts). Es la única fuente de
+  verdad: de ahí salen también la metadata, el sitemap, la imagen OG y el JSON-LD.
+- **Geometría de la portada**: las variables CSS de `.hero` en
+  [`src/app/globals.css`](src/app/globals.css) — alto y posición del isotipo,
+  dónde arranca la diagonal (`--poly-top-x`) y su ángulo (`--poly-run`, que a
+  45° vale el alto del bloque), y la posición del titular.
+- **Paleta de marca**: bloque `@theme` en el mismo `globals.css`
+  (`--color-brand-blue`, `-teal`, `-magenta`, `-amber`, `-ink`).
+- **Logos**: `public/brand/` (copias de `assets/Logo SolvorX V2`). El isotipo SX
+  de la portada está en línea en `src/components/brand/SxIsotype.tsx`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## SEO
 
-## Learn More
+Metadata y JSON-LD (`Organization`, `WebSite`) en `src/app/layout.tsx`; `FAQPage`
+en `src/components/sections/Faq.tsx`. Rutas generadas: `/robots.txt`,
+`/sitemap.xml`, `/opengraph-image`, `/icon.svg`, `/apple-icon.png`.
 
-To learn more about Next.js, take a look at the following resources:
+## Pendiente antes de publicar
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Reemplazar el copy placeholder de `src/lib/site.ts`.
+- Poner el dominio real en `siteConfig.url` (alimenta `metadataBase`, canonical,
+  sitemap y JSON-LD).
+- Sustituir `public/media/demo.mp4`: hoy es el video de referencia de `assets/`,
+  un template de stock ajeno a la marca.

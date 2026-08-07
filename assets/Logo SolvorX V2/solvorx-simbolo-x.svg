@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-60.00 -60.00 1130.00 1120.00" role="img" aria-label="SolvorX symbol">
+  <title>SolvorX symbol</title>
+  <defs>
+  <linearGradient id="ax" gradientUnits="userSpaceOnUse" x1="132.50" y1="0.00" x2="877.50" y2="1000.00"><stop offset="0.00" stop-color="#57BC9A"/><stop offset="0.10" stop-color="#4BA699"/><stop offset="0.20" stop-color="#3B8696"/><stop offset="0.30" stop-color="#377D93"/><stop offset="0.45" stop-color="#326FA5"/><stop offset="0.60" stop-color="#2F6DB9"/><stop offset="0.70" stop-color="#2961B4"/><stop offset="0.80" stop-color="#1D43A3"/><stop offset="0.90" stop-color="#1F4EAE"/><stop offset="1.00" stop-color="#2251AE"/></linearGradient>
+  <linearGradient id="bx" gradientUnits="userSpaceOnUse" x1="877.50" y1="0.00" x2="132.50" y2="1000.00"><stop offset="0.00" stop-color="#DC4761"/><stop offset="0.10" stop-color="#D73F5F"/><stop offset="0.20" stop-color="#C63076"/><stop offset="0.30" stop-color="#B52A7C"/><stop offset="0.40" stop-color="#9F267F"/><stop offset="0.52" stop-color="#82227E"/><stop offset="0.60" stop-color="#64207B"/><stop offset="0.70" stop-color="#571C7A"/><stop offset="0.80" stop-color="#4B1A75"/><stop offset="1.00" stop-color="#4A1877"/></linearGradient>
+  <linearGradient id="vax" gradientUnits="userSpaceOnUse" x1="0.00" y1="0.00" x2="170.42" y2="-126.96"><stop offset="0" stop-color="#000" stop-opacity=".16"/><stop offset=".42" stop-color="#000" stop-opacity="0"/><stop offset=".58" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".13"/></linearGradient>
+  <linearGradient id="vbx" gradientUnits="userSpaceOnUse" x1="745.00" y1="0.00" x2="915.42" y2="126.96"><stop offset="0" stop-color="#000" stop-opacity=".16"/><stop offset=".42" stop-color="#000" stop-opacity="0"/><stop offset=".58" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".13"/></linearGradient>
+  </defs>
+  <path d="M0.00,0.00 L265.00,0.00 L1010.00,1000.00 L745.00,1000.00 Z" fill="url(#ax)"/>
+  <path d="M0.00,0.00 L265.00,0.00 L1010.00,1000.00 L745.00,1000.00 Z" fill="url(#vax)"/>
+  <path d="M745.00,0.00 L1010.00,0.00 L265.00,1000.00 L0.00,1000.00 Z" fill="url(#bx)"/>
+  <path d="M745.00,0.00 L1010.00,0.00 L265.00,1000.00 L0.00,1000.00 Z" fill="url(#vbx)"/>
+</svg>

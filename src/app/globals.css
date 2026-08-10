@@ -20,6 +20,16 @@
 
 :root {
   color-scheme: light;
+  /* Alto de <Header>. Vive en :root (no en .hero) porque el header es
+     hermano de <main>, fuera del subárbol de .hero, y necesita heredar la
+     misma variable que usa el polígono para arrancar donde termina la barra. */
+  --header-h: 5rem;
+}
+
+@media (width < 768px) {
+  :root {
+    --header-h: 4.25rem;
+  }
 }
 
 html {
@@ -56,9 +66,12 @@ summary::-webkit-details-marker {
  * 45°: como el avance horizontal (--poly-run) es igual al recorrido vertical
  * del bloque, el ángulo es exactamente 45° a cualquier tamaño de pantalla.
  * Subir --poly-run inclina la diagonal; bajarlo la empina.
+ *
+ * --header-h no se declara acá: vive en :root (arriba en este archivo) porque
+ * también la consume <Header>, que está fuera de este subárbol. Acá solo se
+ * usa para los calc() de --poly-run y --text-left.
  */
 .hero {
-  --header-h: 5rem;
   --hero-h: max(100svh, 620px);
   --sx-h: 80%; /* alto del isotipo SX */
   --sx-left: 10%; /* separación desde el margen izquierdo */
@@ -82,17 +95,6 @@ summary::-webkit-details-marker {
 }
 
 /*
- * A 45° el avance horizontal de la diagonal es igual al alto de la pantalla,
- * así que en formatos altos o estrechos el polígono tapa casi todo el isotipo
- * y lo poco que asoma queda oscuro sobre oscuro. Ahí se oculta (es decorativo).
- */
-@media (width < 1024px), (aspect-ratio < 5/4) {
-  .hero {
-    --sx-display: none;
-  }
-}
-
-/*
  * Por debajo de 1280px la diagonal al 85% deja demasiado poco espacio oscuro
  * para el titular, así que se adelanta al 70% y el isotipo se reduce.
  */
@@ -105,13 +107,14 @@ summary::-webkit-details-marker {
 }
 
 /*
- * En móvil no cabe la composición del boceto: el isotipo se oculta (es
- * decorativo) y la diagonal se vuelve una inclinación suave del borde
- * superior, para que el texto blanco quede siempre sobre el bloque oscuro.
+ * En móvil (breakpoint compartido con --header-h en :root) la diagonal se
+ * vuelve una inclinación suave que cubre toda la sección: el isotipo queda
+ * tapado por completo, así que se oculta (es decorativo) en vez de asomar
+ * oscuro sobre oscuro.
  */
 @media (width < 768px) {
   .hero {
-    --header-h: 4.25rem;
+    --sx-display: none;
     --poly-clip: polygon(0 14%, 100% 0, 100% 100%, 0 100%);
   }
 }

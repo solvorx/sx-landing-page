@@ -9,10 +9,12 @@ export const siteConfig = {
   name: "SolvorX",
   /** Cambiar por el dominio real antes de publicar. */
   url: "https://solvorx.com",
-  locale: "es_ES",
-  tagline: "Software e inteligencia artificial a la medida de tu operación",
+  /** Fecha de la última revisión de contenido, usada como `lastmod` del sitemap. */
+  lastUpdated: "2026-08-10",
+  locale: "es_LA",
+  tagline: "Desarrollo de software a medida e IA en Paraguay",
   description:
-    "SolvorX diseña y desarrolla software a medida, automatizaciones e integraciones de inteligencia artificial para empresas que necesitan resolver problemas reales de negocio.",
+    "Desarrollamos software a medida, automatizaciones e integraciones de IA para empresas en Paraguay. Del descubrimiento al lanzamiento en semanas.",
   keywords: [
     "desarrollo de software a medida",
     "inteligencia artificial para empresas",
@@ -22,104 +24,77 @@ export const siteConfig = {
     "SolvorX",
   ],
   email: "hola@solvorx.com",
+  whatsapp: "+595 986 741996",
+  telephone: "+595986741996",
   address: {
-    street: "Calle Falsa 123",
-    city: "Ciudad de México",
-    country: "MX",
+    street: "",
+    city: "Asunción",
+    region: "Asunción",
+    country: "PY",
   },
   social: {
-    linkedin: "https://www.linkedin.com/company/solvorx",
-    x: "https://x.com/solvorx",
+    instagram: "https://www.instagram.com/solvorx",
     github: "https://github.com/solvorx",
   },
 } as const;
 
+/** Único canal de contacto habilitado: WhatsApp. */
+export const waLink = "https://wa.me/595986741996";
+
 export const nav = [
   { label: "Servicios", href: "#servicios" },
-  { label: "Soluciones", href: "#soluciones" },
   { label: "Cómo trabajamos", href: "#proceso" },
-  { label: "Preguntas", href: "#faq" },
+  { label: "Contacto", href: "#contacto" },
 ] as const;
 
 export const hero = {
-  title: "Construimos el software que tu negocio necesita",
+  title: "Construimos el software a medida que tu negocio necesita",
   body: "Diseño, desarrollo e inteligencia artificial aplicada. Un equipo que se integra al tuyo y entrega en semanas, no en trimestres.",
-  cta: { label: "Agenda una llamada", href: "#contacto" },
+  cta: { label: "Escríbenos al WhatsApp", href: waLink },
 } as const;
 
 export const showcase = {
-  eyebrow: "En 90 segundos",
-  title: "Así se ve trabajar con SolvorX",
-  body: "Un recorrido corto por la forma en que descubrimos, prototipamos y lanzamos producto junto a nuestros clientes.",
-  src: "/media/demo.mp4",
+  title: "Lo digitalizamos con SolvorX",
+  body: "Descubrimos, prototipamos y lanzamos producto junto a nuestros clientes.",
+  src: "/media/video.mp4",
 } as const;
 
 export type Feature = {
-  icon: "spark" | "layers" | "shield" | "gauge";
+  icon: "spark" | "layers" | "shield" | "gauge" | "sx";
   title: string;
   body: string;
 };
 
 export const features: Feature[] = [
   {
-    icon: "spark",
-    title: "IA aplicada",
-    body: "Asistentes, clasificación y extracción de datos conectados a tus sistemas reales.",
+    icon: "sx",
+    title: "Ecosistema de SolvorX",
+    body: "El núcleo SolvorX: Servicios de usuarios y servicios de consumer para APIs.",
   },
   {
     icon: "layers",
     title: "Producto a medida",
-    body: "Plataformas web y móviles diseñadas alrededor de tu operación, no de una plantilla.",
+    body: "Plataformas diseñadas alrededor de tu operación: Landing page, Apps y más.",
+  },
+  {
+    icon: "layers",
+    title: "Landing Page",
+    body: "Sitios rápidos y conversores, pensados desde el primer frame para vender.",
+  },
+  {
+    icon: "spark",
+    title: "Apps",
+    body: "Aplicaciones web y móviles que tu equipo y tus clientes usan a diario.",
   },
   {
     icon: "shield",
     title: "Integraciones seguras",
-    body: "APIs, ERPs y pasarelas conectadas con trazabilidad y control de accesos.",
+    body: "En SolvorX guardamos tus datos de forma segura y privada.",
   },
   {
     icon: "gauge",
     title: "Entrega continua",
     body: "Ciclos cortos, métricas visibles y despliegues sin interrumpir el servicio.",
-  },
-];
-
-export type BentoCard = {
-  title: string;
-  body: string;
-  tint: "blue" | "teal" | "magenta" | "amber" | "ink";
-  span: "wide" | "tall" | "base";
-};
-
-export const bento: BentoCard[] = [
-  {
-    title: "Automatización de procesos",
-    body: "Flujos que eliminan el trabajo repetitivo entre áreas y sistemas que no se hablan.",
-    tint: "blue",
-    span: "base",
-  },
-  {
-    title: "Analítica y reportes",
-    body: "Tableros con la información que realmente se usa para decidir, actualizada al día.",
-    tint: "teal",
-    span: "base",
-  },
-  {
-    title: "Agentes con IA",
-    body: "Copilotos internos entrenados con tu documentación y tus reglas de negocio.",
-    tint: "magenta",
-    span: "tall",
-  },
-  {
-    title: "Portales de cliente",
-    body: "Autoservicio, cotizaciones y seguimiento en una experiencia propia de tu marca.",
-    tint: "amber",
-    span: "base",
-  },
-  {
-    title: "Modernización de legado",
-    body: "Migramos sistemas críticos por partes, sin apagar la operación en el camino.",
-    tint: "ink",
-    span: "wide",
   },
 ];
 
@@ -138,63 +113,52 @@ export const steps = [
   },
 ] as const;
 
-export const ctaBanner = {
-  title: "Cuéntanos qué necesitas resolver",
-  body: "Una llamada de 30 minutos es suficiente para saber si podemos ayudarte y cómo.",
-  primary: { label: "Agenda una llamada", href: "#contacto" },
-  secondary: { label: "Ver servicios", href: "#servicios" },
-} as const;
-
 export const faq = [
   {
-    q: "¿Qué tipo de proyectos toma SolvorX?",
-    a: "Desarrollamos plataformas web, aplicaciones internas, integraciones entre sistemas y soluciones de inteligencia artificial aplicadas a procesos de negocio concretos.",
+    question: "¿Cuánto cuesta desarrollar software a medida con SolvorX?",
+    answer:
+      "Depende del alcance, puedes comunicarte con nosotros por WhatsApp y te daremos un presupuesto personalizado.",
   },
   {
-    q: "¿Cuánto tarda un proyecto?",
-    a: "Un prototipo funcional suele estar listo en dos a cuatro semanas. Un producto completo en producción, entre tres y seis meses según el alcance.",
+    question: "¿Cuánto tiempo toma un proyecto?",
+    answer:
+      "El primer prototipo funcional suele estar listo en dos semanas. De ahí iteramos en ciclos cortos hasta escalar el sistema completo, en vez de entregar todo junto al final de un trimestre.",
   },
   {
-    q: "¿Trabajan con equipos internos?",
-    a: "Sí. Nos integramos a tus procesos y herramientas, y dejamos el código y la documentación en tu poder desde el primer día.",
+    question: "¿Ofrecen dominio?",
+    answer:
+      "Sí, ofrecemos dominio de SolvorX para apps de forma gratuita <b>minegocio.solvorx.app</b> <br> Para dominios personalizados, ofrecemos asistencia en la compra y configuración.",
   },
   {
-    q: "¿Cómo se estructura el costo?",
-    a: "Trabajamos por fases con alcance y precio cerrados, o por equipo dedicado cuando el proyecto es de largo plazo.",
+    question: "¿Ofrecen soporte después del lanzamiento?",
+    answer:
+      "Sí, ofrecemos servicio de mantenimiento gratuito y nuevos desarrollos se cotizan de forma separada.",
   },
   {
-    q: "¿Qué pasa después del lanzamiento?",
-    a: "Ofrecemos soporte y evolución continua, con acuerdos de servicio adaptados a la criticidad del sistema.",
-  },
-  {
-    q: "¿Con qué tecnologías trabajan?",
-    a: "Principalmente TypeScript, React, Next.js, Python y servicios en la nube, además de los modelos de lenguaje más adecuados para cada caso.",
+    question: "¿Cómo empezamos a trabajar juntos?",
+    answer:
+      "Escríbenos por WhatsApp contándonos el problema que querés resolver. En esa primera conversación evaluamos la problematica y definimos los próximos pasos.",
   },
 ] as const;
+
+export const ctaBanner = {
+  title: "Cuéntanos qué necesitas resolver",
+  body: "Una conversación por WhatsApp es suficiente para saber si podemos ayudarte y cómo.",
+  primary: { label: "Escríbenos al WhatsApp", href: waLink },
+  secondary: { label: "Ver servicios", href: "#servicios" },
+} as const;
 
 export const footerLinks = [
   {
     title: "Servicios",
-    links: [
-      { label: "Software a medida", href: "#servicios" },
-      { label: "Inteligencia artificial", href: "#servicios" },
-      { label: "Integraciones", href: "#servicios" },
-      { label: "Automatización", href: "#soluciones" },
-    ],
+    links: [{ label: "Ver servicios", href: "#servicios" }],
   },
   {
     title: "Empresa",
     links: [
       { label: "Cómo trabajamos", href: "#proceso" },
-      { label: "Preguntas frecuentes", href: "#faq" },
       { label: "Contacto", href: "#contacto" },
-    ],
-  },
-  {
-    title: "Legal",
-    links: [
-      { label: "Aviso de privacidad", href: "#" },
-      { label: "Términos de servicio", href: "#" },
+      { label: "WhatsApp", href: waLink },
     ],
   },
 ] as const;

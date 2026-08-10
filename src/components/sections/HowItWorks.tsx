@@ -4,11 +4,18 @@ import { steps } from "@/lib/site";
 
 export function HowItWorks() {
   return (
-    <section id="proceso" className="bg-white py-20 lg:py-24">
+    <section
+      id="proceso"
+      aria-labelledby="proceso-title"
+      className="bg-white py-20 lg:py-24"
+    >
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal className="mx-auto max-w-2xl text-center">
           <Badge>Cómo trabajamos</Badge>
-          <h2 className="mt-6 font-display text-3xl font-semibold text-balance text-brand-ink lg:text-4xl">
+          <h2
+            id="proceso-title"
+            className="mt-6 font-display text-3xl font-semibold text-balance text-brand-ink lg:text-4xl"
+          >
             Tres fases, sin sorpresas
           </h2>
         </Reveal>

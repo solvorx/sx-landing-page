@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/brand/Wordmark";
-import { nav } from "@/lib/site";
+import { nav, waLink } from "@/lib/site";
 
 /**
- * Barra blanca sólida en la parte superior de la portada. Su alto define
- * `--header-h`, del que cuelga la geometría del polígono del hero.
+ * Barra blanca sólida en la parte superior de la portada. Consume
+ * `--header-h` desde `:root` (globals.css) — no la define — para quedar
+ * sincronizada con el polígono del hero, que arranca justo donde termina
+ * esta barra.
  */
 export function Header() {
   return (
@@ -26,12 +28,14 @@ export function Header() {
           ))}
         </nav>
 
-        <Link
-          href="#contacto"
+        <a
+          href={waLink}
+          target="_blank"
+          rel="noreferrer noopener"
           className="inline-flex h-10 items-center rounded-full bg-brand-ink px-5 text-sm font-medium text-white transition-colors hover:bg-brand-blue"
         >
-          Contacto
-        </Link>
+          WhatsApp
+        </a>
       </div>
     </header>
   );

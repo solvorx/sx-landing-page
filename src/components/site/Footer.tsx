@@ -1,10 +1,9 @@
 import Link from "next/link";
 import { Wordmark } from "@/components/brand/Wordmark";
-import { footerLinks, siteConfig } from "@/lib/site";
+import { footerLinks, siteConfig, waLink } from "@/lib/site";
 
 const social = [
-  { label: "LinkedIn", href: siteConfig.social.linkedin },
-  { label: "X", href: siteConfig.social.x },
+  { label: "Instagram", href: siteConfig.social.instagram },
   { label: "GitHub", href: siteConfig.social.github },
 ];
 
@@ -12,41 +11,60 @@ export function Footer() {
   return (
     <footer className="border-t border-brand-ink/8 bg-white py-16">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
+        <div className="grid gap-12 lg:grid-cols-[1.4fr_repeat(2,1fr)]">
           <div>
             <Wordmark className="h-7 w-auto" />
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-brand-slate/60">
-              {siteConfig.address.street}
-              <br />
-              {siteConfig.address.city}
+              {siteConfig.address.city}, Paraguay
             </p>
             <a
-              href={`mailto:${siteConfig.email}`}
+              href={waLink}
+              target="_blank"
+              rel="noreferrer noopener"
               className="mt-4 inline-block text-sm font-medium text-brand-blue"
             >
-              {siteConfig.email}
+              WhatsApp: {siteConfig.whatsapp}
             </a>
           </div>
 
-          {footerLinks.map((group) => (
-            <nav key={group.title} aria-label={group.title}>
-              <h2 className="font-display text-sm font-semibold text-brand-ink">
-                {group.title}
-              </h2>
-              <ul className="mt-4 space-y-3">
-                {group.links.map((link) => (
-                  <li key={link.label}>
-                    <Link
-                      href={link.href}
-                      className="text-sm text-brand-slate/60 transition-colors hover:text-brand-ink"
-                    >
-                      {link.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ))}
+          {footerLinks.map((group) => {
+            const headingId = `footer-${group.title.toLowerCase()}`;
+            return (
+              <nav key={group.title} aria-labelledby={headingId}>
+                <p
+                  id={headingId}
+                  className="font-display text-sm font-semibold text-brand-ink"
+                >
+                  {group.title}
+                </p>
+                <ul className="mt-4 space-y-3">
+                  {group.links.map((link) =>
+                    link.href.startsWith("http") ? (
+                      <li key={link.label}>
+                        <a
+                          href={link.href}
+                          target="_blank"
+                          rel="noreferrer noopener"
+                          className="text-sm text-brand-slate/60 transition-colors hover:text-brand-ink"
+                        >
+                          {link.label}
+                        </a>
+                      </li>
+                    ) : (
+                      <li key={link.label}>
+                        <Link
+                          href={link.href}
+                          className="text-sm text-brand-slate/60 transition-colors hover:text-brand-ink"
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    )
+                  )}
+                </ul>
+              </nav>
+            );
+          })}
         </div>
 
         <div className="mt-14 flex flex-col gap-4 border-t border-brand-ink/8 pt-8 sm:flex-row sm:items-center sm:justify-between">

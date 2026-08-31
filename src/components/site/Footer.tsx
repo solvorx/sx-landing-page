@@ -11,7 +11,9 @@ export function Footer() {
   return (
     <footer className="border-t border-brand-ink/8 bg-white py-16">
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
-        <div className="grid gap-12 lg:grid-cols-[1.4fr_repeat(2,1fr)]">
+        {/* La primera columna es la marca; el resto, un tramo por grupo de
+            `footerLinks` (hoy: Servicios, Empresa y Legal). */}
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div>
             <Wordmark className="h-7 w-auto" />
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-brand-slate/60">

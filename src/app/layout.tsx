@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Poppins } from "next/font/google";
-import { faq, features, showcase, siteConfig } from "@/lib/site";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { features, siteConfig } from "@/lib/site";
 import "./globals.css";
 
 const inter = Inter({
@@ -18,8 +19,6 @@ const poppins = Poppins({
 
 const title = `${siteConfig.name} | ${siteConfig.tagline}`;
 
-/** faq.answer puede traer HTML simple; el JSON-LD quiere texto plano. */
-const stripHtml = (html: string) => html.replace(/<[^>]+>/g, "");
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -69,6 +68,10 @@ export const viewport: Viewport = {
   colorScheme: "light",
 };
 
+/**
+ * JSON-LD de alcance global. Lo específico de cada vista (FAQPage, VideoObject,
+ * SoftwareApplication) lo emite su propia página con <JsonLd>.
+ */
 const jsonLd = [
   {
     "@context": "https://schema.org",
@@ -79,7 +82,6 @@ const jsonLd = [
     logo: `${siteConfig.url}/brand/logo-claro.svg`,
     image: `${siteConfig.url}/brand/logo-claro.svg`,
     description: siteConfig.description,
-    email: siteConfig.email,
     telephone: siteConfig.telephone,
     address: {
       "@type": "PostalAddress",
@@ -98,6 +100,7 @@ const jsonLd = [
           "@type": "Service",
           name: feature.title,
           description: feature.body,
+          url: feature.href ? `${siteConfig.url}${feature.href}` : undefined,
           provider: { "@id": `${siteConfig.url}/#organization` },
           areaServed: { "@type": "Country", name: "Paraguay" },
         },
@@ -113,28 +116,6 @@ const jsonLd = [
     inLanguage: "es",
     publisher: { "@id": `${siteConfig.url}/#organization` },
   },
-  {
-    "@context": "https://schema.org",
-    "@type": "VideoObject",
-    name: showcase.title,
-    description: showcase.body,
-    contentUrl: `${siteConfig.url}${showcase.src}`,
-    thumbnailUrl: `${siteConfig.url}/media/video-poster.webp`,
-    uploadDate: siteConfig.lastUpdated,
-    publisher: { "@id": `${siteConfig.url}/#organization` },
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faq.map((item) => ({
-      "@type": "Question",
-      name: item.question,
-      acceptedAnswer: {
-        "@type": "Answer",
-        text: stripHtml(item.answer),
-      },
-    })),
-  },
 ];
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -144,14 +125,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} ${poppins.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-white font-sans text-brand-slate">
-        <script
-          type="application/ld+json"
-          // El contenido es estático y viene de site.ts, no de entrada de usuario;
-          // se escapa "<" igual, siguiendo la recomendación de Next para JSON-LD.
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
-          }}
-        />
+        <JsonLd data={jsonLd} />
         <a
           href="#contenido"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:rounded-full focus:bg-brand-ink focus:px-5 focus:py-2 focus:text-sm focus:font-medium focus:text-white"

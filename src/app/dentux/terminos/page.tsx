@@ -2,35 +2,35 @@ import type { Metadata } from "next";
 import { LegalDoc } from "@/components/legal/LegalDoc";
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
-import { adentConfig } from "@/lib/adent";
-import { adentTerms } from "@/lib/legal";
+import { dentuxConfig } from "@/lib/dentux";
+import { dentuxTerms } from "@/lib/legal";
 import { siteConfig } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: adentTerms.title,
-  description: adentTerms.description,
-  alternates: { canonical: adentTerms.path },
+  title: dentuxTerms.title,
+  description: dentuxTerms.description,
+  alternates: { canonical: dentuxTerms.path },
   openGraph: {
     type: "article",
     locale: siteConfig.locale,
-    url: `${siteConfig.url}${adentTerms.path}`,
+    url: `${siteConfig.url}${dentuxTerms.path}`,
     siteName: siteConfig.name,
-    title: adentTerms.title,
-    description: adentTerms.description,
-    modifiedTime: adentTerms.updatedAt,
+    title: dentuxTerms.title,
+    description: dentuxTerms.description,
+    modifiedTime: dentuxTerms.updatedAt,
   },
 };
 
-export default function AdentTerminosPage() {
+export default function DentuxTerminosPage() {
   return (
     <>
       <Header variant="solid" />
       <main id="contenido">
         <LegalDoc
-          document={adentTerms}
+          document={dentuxTerms}
           breadcrumb={[
             { label: siteConfig.name, href: "/" },
-            { label: adentConfig.name, href: adentConfig.path },
+            { label: dentuxConfig.name, href: dentuxConfig.path },
             { label: "Términos y condiciones" },
           ]}
         />

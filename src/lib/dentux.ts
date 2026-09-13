@@ -1,10 +1,10 @@
 /**
- * Contenido de ADent, el SaaS de gestión odontológica del ecosistema SolvorX.
+ * Contenido de DentuX, el SaaS de gestión odontológica del ecosistema SolvorX.
  *
- * Fuente de verdad de la vista `/adent`: de acá salen la metadata, el JSON-LD
+ * Fuente de verdad de la vista `/dentux`: de acá salen la metadata, el JSON-LD
  * (`SoftwareApplication` + `FAQPage`), la imagen OG y las secciones. Los datos
  * duros (cupos de mensajes de cada plan) son espejo del catálogo real de
- * `adent-service` (`prisma/seed.ts`, tabla `billing.plan`): si cambian allá,
+ * `sx-dentux-service` (`prisma/seed.ts`, tabla `billing.plan`): si cambian allá,
  * cambian acá.
  *
  * Los términos y condiciones del servicio viven en `src/lib/legal.ts`.
@@ -13,34 +13,34 @@
 import type { Feature, FaqItem, Step } from "@/lib/site";
 import { waLink } from "@/lib/site";
 
-export const adentConfig = {
-  name: "ADent",
-  path: "/adent",
+export const dentuxConfig = {
+  name: "DentuX",
+  path: "/dentux",
   tagline: "Software de gestión para clínicas odontológicas",
   description:
-    "ADent es el software de gestión para clínicas odontológicas y dentistas independientes: agenda por profesional, ficha de pacientes, recordatorios automáticos de citas y portal del paciente.",
+    "DentuX es el software de gestión para clínicas odontológicas y dentistas independientes: agenda por profesional, ficha de pacientes, recordatorios automáticos de citas y portal del paciente.",
   keywords: [
     "software para clínicas odontológicas",
     "software dental Paraguay",
     "agenda para consultorio odontológico",
     "gestión de pacientes dentales",
     "recordatorio de citas dentales",
-    "ADent",
+    "DentuX",
   ],
   /** Categoría de schema.org para el JSON-LD de la vista. */
   applicationCategory: "BusinessApplication",
-  termsPath: "/adent/terminos",
+  termsPath: "/dentux/terminos",
 } as const;
 
-export const adentHero = {
+export const dentuxHero = {
   eyebrow: "Un producto de SolvorX",
   title: "La agenda de tu clínica dental, ordenada y sin ausencias",
-  body: "ADent reúne agenda, pacientes y recordatorios en un solo lugar. Todo el equipo trabaja sobre el mismo calendario y cada paciente recibe su aviso sin que nadie tenga que escribirlo a mano.",
+  body: "DentuX reúne agenda, pacientes y recordatorios en un solo lugar. Todo el equipo trabaja sobre el mismo calendario y cada paciente recibe su aviso sin que nadie tenga que escribirlo a mano.",
   primary: { label: "Pedir una demo por WhatsApp", href: waLink },
   secondary: { label: "Ver planes", href: "#planes" },
 } as const;
 
-export const adentFeatures: Feature[] = [
+export const dentuxFeatures: Feature[] = [
   {
     icon: "calendar",
     title: "Agenda por profesional",
@@ -73,7 +73,7 @@ export const adentFeatures: Feature[] = [
   },
 ];
 
-export const adentSteps: Step[] = [
+export const dentuxSteps: Step[] = [
   {
     title: "Damos de alta tu clínica",
     body: "Cargamos la organización, los profesionales y los horarios de atención con vos en una sola sesión.",
@@ -88,7 +88,7 @@ export const adentSteps: Step[] = [
   },
 ];
 
-export type AdentPlan = {
+export type DentuxPlan = {
   code: string;
   name: string;
   summary: string;
@@ -98,7 +98,7 @@ export type AdentPlan = {
   featured?: boolean;
 };
 
-export const adentPlans: AdentPlan[] = [
+export const dentuxPlans: DentuxPlan[] = [
   {
     code: "free",
     name: "Free",
@@ -130,19 +130,19 @@ export const adentPlans: AdentPlan[] = [
  * por WhatsApp. Este aviso y la cláusula de pagos de los términos
  * (`src/lib/legal.ts`) tienen que decir lo mismo.
  */
-export const adentBillingNotice =
+export const dentuxBillingNotice =
   "Estamos habilitando los pagos en línea. Mientras tanto, el alta y el cambio de plan se coordinan por WhatsApp y los precios vigentes te los pasamos en esa conversación.";
 
-export const adentFaq: FaqItem[] = [
+export const dentuxFaq: FaqItem[] = [
   {
-    question: "¿Para quién es ADent?",
+    question: "¿Para quién es DentuX?",
     answer:
       "Para clínicas odontológicas con varios profesionales y también para dentistas que trabajan solos. Una misma cuenta puede administrar más de una clínica.",
   },
   {
     question: "¿Hay que instalar algo?",
     answer:
-      "No. ADent funciona desde el navegador, en computadora o celular. No hay servidores que mantener del lado de la clínica.",
+      "No. DentuX funciona desde el navegador, en computadora o celular. No hay servidores que mantener del lado de la clínica.",
   },
   {
     question: "¿Cómo recibe el paciente su recordatorio?",
@@ -150,24 +150,24 @@ export const adentFaq: FaqItem[] = [
       "Por correo electrónico o SMS antes de la cita, con un enlace de un solo uso para confirmar, reprogramar o cancelar sin crearse una cuenta.",
   },
   {
-    question: "¿Puedo probar ADent sin pagar?",
+    question: "¿Puedo probar DentuX sin pagar?",
     answer:
       "Sí. El plan <b>Free</b> incluye agenda, pacientes, portal del paciente y un cupo mensual de recordatorios, sin costo.",
   },
   {
-    question: "¿Cómo se paga ADent?",
+    question: "¿Cómo se paga DentuX?",
     answer:
       "Estamos habilitando los pagos en línea con una pasarela local. Hasta que estén disponibles, el alta y el cambio de plan se coordinan por WhatsApp.",
   },
   {
     question: "¿De quién son los datos de mis pacientes?",
     answer:
-      'De tu clínica. SolvorX los trata únicamente para prestarte el servicio y no los usa para otra cosa. El detalle está en los <a href="/adent/terminos">términos y condiciones de ADent</a>.',
+      'De tu clínica. SolvorX los trata únicamente para prestarte el servicio y no los usa para otra cosa. El detalle está en los <a href="/dentux/terminos">términos y condiciones de DentuX</a>.',
   },
 ];
 
-export const adentCta = {
-  title: "¿Vemos ADent con tu agenda real?",
+export const dentuxCta = {
+  title: "¿Vemos DentuX con tu agenda real?",
   body: "Coordinamos una demo por WhatsApp, cargamos un par de días de tu clínica y decidís con el sistema andando.",
   primary: { label: "Escribinos al WhatsApp", href: waLink },
   secondary: { label: "Ver planes", href: "#planes" },

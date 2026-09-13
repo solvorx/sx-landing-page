@@ -2,31 +2,68 @@
  * Términos y condiciones — BASE para revisión legal.
  *
  * Este archivo es la fuente de verdad de los dos documentos legales del sitio:
- * los de SolvorX (`/terminos`, enlazados desde el inicio) y los de ADent
- * (`/adent/terminos`, enlazados desde la vista del producto). Los renderiza
+ * los de SolvorX (`/terminos`, enlazados desde el inicio) y los de DentuX
+ * (`/dentux/terminos`, enlazados desde la vista del producto). Los renderiza
  * `components/legal/LegalDoc.tsx`.
  *
- * Dos cosas siguen pendientes antes de considerarlos definitivos:
+ * Pendiente antes de considerarlos definitivos:
  *
- * 1. `legalEntity.name` y `legalEntity.taxId` están vacíos a propósito. El
- *    documento omite la línea entera si no hay dato, para no publicar una
- *    razón social o un RUC inventado; completarlos cuando existan.
- * 2. La cláusula de pagos describe el estado real de hoy — cobros en línea con
+ * 1. La cláusula de pagos describe el estado real de hoy — cobros en línea con
  *    pasarela todavía en implementación. Cuando el PSP entre en producción hay
  *    que reescribir esa cláusula (medios de pago, moneda, reintentos,
  *    reembolsos) y mover `updatedAt`.
+ * 2. La modalidad de entrega de la sección "Titularidad del software" está
+ *    escrita para cubrir las dos opciones (cesión al cliente vs. licencia con
+ *    alojamiento propio). Cuando el modelo de negocio se decida, conviene
+ *    dejar solo la que aplique.
  */
 
 import { siteConfig, waLink } from "@/lib/site";
-import { adentConfig } from "@/lib/adent";
+import { dentuxConfig } from "@/lib/dentux";
 
+/**
+ * Datos del prestador. Es una empresa unipersonal: el titular es una persona
+ * física, así que "razón social" es el nombre que figura en el RUC y en el
+ * timbrado, no una denominación societaria.
+ *
+ * Los campos vacíos no se publican (ver `identification`). El domicilio legal
+ * vive acá y NO en `siteConfig.address`, que es la ciudad comercial que usan
+ * el footer y el JSON-LD.
+ */
 export const legalEntity = {
-  /** Razón social. Vacío hasta que exista la constitución formal. */
-  name: "",
-  /** RUC. Vacío hasta que exista. */
-  taxId: "",
+  /** Nombre del titular, tal como figura en el RUC. */
+  name: "Jessica Alarcon",
+  /** RUC con dígito verificador. */
+  taxId: "5711437-4",
+  /**
+   * Cédula de identidad civil. NO se publica: el RUC es la cédula más el
+   * dígito verificador, así que una línea aparte no identifica mejor al
+   * prestador y repite un documento de identidad de una persona física.
+   * Queda acá porque es el dato que se usa para facturación y para el alta
+   * ante la pasarela de pagos.
+   */
+  document: "5711437",
+  /** Domicilio legal completo. */
+  address: "Pedro Juan Caballero 2767, Fernando de la Mora",
+  /**
+   * Dirección electrónica del prestador. La exige el art. 7 de la Ley
+   * N.º 4868/2013 para el comercio electrónico; por eso se publica en los
+   * términos aunque WhatsApp siga siendo el canal de atención habitual.
+   *
+   * Se muestra como texto plano, sin enlace `mailto:`: es lo primero que
+   * buscan los cosechadores de direcciones. Reemplazar por una casilla del
+   * dominio en cuanto exista, para no publicar el correo personal.
+   */
+  email: "jessicala182@gmail.com",
   jurisdiction: "República del Paraguay",
-  venue: "los tribunales ordinarios de la ciudad de Asunción, Paraguay",
+  /**
+   * Fernando de la Mora pertenece a la Circunscripción Judicial de Central
+   * (Ley N.º 3151, con asiento en San Lorenzo), no a la de Capital: el fuero
+   * acompaña al domicilio del prestador en vez de forzar una prórroga a
+   * Asunción, que frente a un consumidor podría no sostenerse.
+   */
+  venue:
+    "los tribunales ordinarios de la Circunscripción Judicial de Central, Paraguay",
 };
 
 export type LegalBlock =
@@ -63,14 +100,29 @@ const identification: string[] = [
   `Nombre comercial: ${siteConfig.name}`,
   legalEntity.name && `Razón social: ${legalEntity.name}`,
   legalEntity.taxId && `RUC: ${legalEntity.taxId}`,
-  `Domicilio: ${siteConfig.address.city}, ${legalEntity.jurisdiction}`,
+  `Domicilio: ${legalEntity.address}, ${legalEntity.jurisdiction}`,
   `WhatsApp: ${siteConfig.whatsapp}`,
+  legalEntity.email && `Correo electrónico: ${legalEntity.email}`,
 ].filter((line): line is string => line.length > 0);
 
+/**
+ * OJO al actualizar: la Ley N.º 1682/2001 (que citaba la versión anterior de
+ * este documento) fue DEROGADA por la Ley N.º 6534/2020, que a su vez solo
+ * regula datos crediticios. El marco general vigente es la Ley N.º 7593/2025,
+ * promulgada el 27/11/2025 con dos años de vacatio legis: rige plenamente
+ * desde noviembre de 2027, y hasta entonces sirve como estándar de referencia.
+ */
 const applicableLaw = (subject: string): LegalBlock[] => [
   p(
-    `Estas condiciones se rigen por las leyes de la ${legalEntity.jurisdiction}, en particular la Ley N.º 1334/1998 de Defensa del Consumidor y del Usuario, la Ley N.º 4868/2013 de Comercio Electrónico, la Ley N.º 4017/2010 sobre validez jurídica de los mensajes de datos y la Ley N.º 1682/2001 y sus modificatorias sobre información de carácter privado.`,
+    `Estas condiciones se rigen por las leyes de la ${legalEntity.jurisdiction}, en particular:`,
   ),
+  list([
+    "Ley N.º 1334/1998 de Defensa del Consumidor y del Usuario, y sus modificatorias.",
+    "Ley N.º 4868/2013 de Comercio Electrónico y su Decreto Reglamentario N.º 1165/2014.",
+    "Ley N.º 4017/2010, modificada y ampliada por la Ley N.º 4610/2012, sobre validez jurídica de la firma electrónica, la firma digital, los mensajes de datos y el expediente electrónico.",
+    "Ley N.º 1328/1998 de Derecho de Autor y Derechos Conexos, y su Decreto Reglamentario N.º 5159/1999.",
+    "Ley N.º 7593/2025 de Protección de Datos Personales, promulgada el 27 de noviembre de 2025. Su plena vigencia opera en noviembre de 2027, tras el plazo de adecuación de dos años que la propia ley establece; hasta entonces la tomamos como estándar de referencia para el tratamiento de datos.",
+  ]),
   p(
     `Cualquier controversia relacionada con ${subject} se someterá a ${legalEntity.venue}, sin perjuicio del fuero que corresponda de manera imperativa a quien tenga la calidad de consumidor.`,
   ),
@@ -81,7 +133,7 @@ const contactSection = (subject: string): LegalSection => ({
   title: "Contacto",
   blocks: [
     p(
-      `Para cualquier consulta sobre ${subject}, incluido el ejercicio de derechos sobre datos personales, escribinos por <a href="${waLink}" target="_blank" rel="noreferrer noopener">WhatsApp al ${siteConfig.whatsapp}</a>, nuestro único canal de contacto. Respondemos por el mismo medio en un plazo razonable.`,
+      `Para cualquier consulta sobre ${subject}, incluido el ejercicio de derechos sobre datos personales, escribinos por <a href="${waLink}" target="_blank" rel="noreferrer noopener">WhatsApp al ${siteConfig.whatsapp}</a>, que es nuestro canal de atención habitual, o a ${legalEntity.email} si preferís dejar constancia por escrito. Respondemos por el mismo medio en un plazo razonable.`,
     ),
   ],
 });
@@ -93,7 +145,7 @@ export const solvorxTerms: LegalDocument = {
   title: "Términos y condiciones",
   description: `Términos y condiciones de uso del sitio y de contratación de los servicios de ${siteConfig.name} en Paraguay.`,
   summary: `Estas condiciones regulan el uso de este sitio y la contratación de los servicios de ${siteConfig.name}. Están escritas en lenguaje simple a propósito: si algo no queda claro, preguntanos antes de contratar.`,
-  updatedAt: "2026-08-31",
+  updatedAt: "2026-09-04",
   sections: [
     {
       id: "quienes-somos",
@@ -131,7 +183,7 @@ export const solvorxTerms: LegalDocument = {
       title: "4. Servicios",
       blocks: [
         p(
-          "Prestamos servicios de desarrollo de software a medida, aplicaciones web y móviles, integraciones, automatización de procesos, inteligencia artificial aplicada y consultoría tecnológica. También ofrecemos productos propios en modalidad de suscripción.",
+          "Prestamos servicios de desarrollo de software a medida, aplicaciones web, landing pages, integraciones entre sistemas, automatización de procesos y consultoría tecnológica. También ofrecemos productos propios en modalidad de suscripción.",
         ),
         p(
           "La información publicada en el sitio es descriptiva y no constituye una oferta vinculante: el alcance de cada trabajo se define en la propuesta que enviamos a cada cliente.",
@@ -181,14 +233,27 @@ export const solvorxTerms: LegalDocument = {
       ],
     },
     {
-      id: "propiedad-intelectual",
-      title: "8. Propiedad intelectual",
+      id: "titularidad-y-licencia",
+      title: "8. Titularidad del software, licencia y alojamiento",
       blocks: [
         p(
-          "Una vez pagado el precio total acordado, el cliente es titular del código y de los entregables desarrollados específicamente para su proyecto.",
+          "Cada propuesta indica bajo cuál de estas dos modalidades se entrega el trabajo. Se define antes de empezar, porque cambia qué se lleva el cliente al terminar:",
+        ),
+        list([
+          "<b>Desarrollo con cesión.</b> Pagado el precio total acordado, el cliente pasa a ser titular del código y de los entregables desarrollados específicamente para su proyecto, y puede alojarlos donde quiera.",
+          `<b>Licencia con servicio administrado.</b> ${siteConfig.name} conserva la titularidad del código y opera la infraestructura —servidores, dominios, certificados y respaldos—. El cliente recibe una licencia de uso no exclusiva e intransferible, vigente mientras esté vigente el servicio y al día la cuota periódica que la propuesta indique.`,
+        ]),
+        p(
+          "Conforme a la Ley N.º 1328/1998 de Derecho de Autor y Derechos Conexos, en una obra creada por encargo la titularidad de los derechos patrimoniales es la que las partes acuerden. Por eso manda lo que diga la propuesta aceptada: si no dice nada sobre este punto, se entiende contratada la modalidad de licencia con servicio administrado.",
         ),
         p(
-          `Quedan excluidos de esa cesión: los componentes, librerías y herramientas propias de ${siteConfig.name} reutilizables entre proyectos, y el software de terceros, que se rige por su propia licencia. Sobre esos componentes el cliente recibe una licencia de uso perpetua, no exclusiva e intransferible para operar su solución.`,
+          `Quedan excluidos de toda cesión los componentes, librerías y herramientas propias de ${siteConfig.name} reutilizables entre proyectos, y el software de terceros, que se rige por su propia licencia. Sobre esos componentes el cliente recibe una licencia de uso perpetua, no exclusiva e intransferible para operar su solución.`,
+        ),
+        p(
+          "<b>Los datos son siempre del cliente</b>, en cualquiera de las dos modalidades y con independencia de quién aloje el sistema. Al terminar la relación puede pedir una copia completa en un formato de uso corriente dentro de los treinta (30) días corridos siguientes.",
+        ),
+        p(
+          `Si ${siteConfig.name} deja de prestar el servicio administrado, avisará con una antelación mínima de sesenta (60) días corridos y acompañará la migración entregando los datos y la documentación necesaria para operar el sistema en otra infraestructura.`,
         ),
         p(
           `Salvo indicación en contrario del cliente, ${siteConfig.name} puede mencionar el proyecto como referencia comercial, sin revelar información confidencial.`,
@@ -212,10 +277,10 @@ export const solvorxTerms: LegalDocument = {
           "Los datos de contacto que nos envíes por WhatsApp se usan únicamente para responder tu consulta y gestionar la eventual relación comercial. No los vendemos ni los cedemos con fines publicitarios.",
         ),
         p(
-          "Cuando en el marco de un proyecto tratamos datos personales que son del cliente, lo hacemos siguiendo sus instrucciones y solo para prestar el servicio contratado, conforme a la Ley N.º 1682/2001 y sus modificatorias.",
+          "Cuando en el marco de un proyecto tratamos datos personales que son del cliente, lo hacemos siguiendo sus instrucciones y solo para prestar el servicio contratado, alineados con la Ley N.º 7593/2025 de Protección de Datos Personales.",
         ),
         p(
-          `Podés pedir el acceso, la rectificación o la supresión de tus datos escribiéndonos por <a href="${waLink}" target="_blank" rel="noreferrer noopener">WhatsApp al ${siteConfig.whatsapp}</a>.`,
+          `Podés pedir el acceso, la rectificación o la supresión de tus datos escribiéndonos por <a href="${waLink}" target="_blank" rel="noreferrer noopener">WhatsApp al ${siteConfig.whatsapp}</a> o a ${legalEntity.email}.`,
         ),
       ],
     },
@@ -251,7 +316,7 @@ export const solvorxTerms: LegalDocument = {
       title: "13. Productos del ecosistema",
       blocks: [
         p(
-          `Además de los proyectos a medida, ofrecemos productos propios en modalidad de suscripción. <b>${adentConfig.name}</b>, nuestro software de gestión para clínicas odontológicas, se rige por sus propias condiciones: <a href="${adentConfig.termsPath}">términos y condiciones de ${adentConfig.name}</a>. En caso de contradicción entre ambos documentos, prevalecen las condiciones específicas del producto.`,
+          `Además de los proyectos a medida, ofrecemos productos propios en modalidad de suscripción. <b>${dentuxConfig.name}</b>, nuestro software de gestión para clínicas odontológicas, se rige por sus propias condiciones: <a href="${dentuxConfig.termsPath}">términos y condiciones de ${dentuxConfig.name}</a>. En caso de contradicción entre ambos documentos, prevalecen las condiciones específicas del producto.`,
         ),
       ],
     },
@@ -273,14 +338,14 @@ export const solvorxTerms: LegalDocument = {
   ],
 };
 
-/* ============================= ADent ============================= */
+/* ============================= DentuX ============================= */
 
-export const adentTerms: LegalDocument = {
-  path: adentConfig.termsPath,
-  title: `Términos y condiciones de ${adentConfig.name}`,
-  description: `Condiciones de uso y contratación de ${adentConfig.name}, el software de gestión para clínicas odontológicas de ${siteConfig.name}.`,
-  summary: `Estas condiciones regulan el uso de ${adentConfig.name}, el servicio de gestión odontológica de ${siteConfig.name}. Complementan los <a href="${solvorxTerms.path}">términos generales de ${siteConfig.name}</a>; ante una diferencia, manda este documento.`,
-  updatedAt: "2026-08-31",
+export const dentuxTerms: LegalDocument = {
+  path: dentuxConfig.termsPath,
+  title: `Términos y condiciones de ${dentuxConfig.name}`,
+  description: `Condiciones de uso y contratación de ${dentuxConfig.name}, el software de gestión para clínicas odontológicas de ${siteConfig.name}.`,
+  summary: `Estas condiciones regulan el uso de ${dentuxConfig.name}, el servicio de gestión odontológica de ${siteConfig.name}. Complementan los <a href="${solvorxTerms.path}">términos generales de ${siteConfig.name}</a>; ante una diferencia, manda este documento.`,
+  updatedAt: "2026-09-04",
   sections: [
     {
       id: "partes",
@@ -290,7 +355,7 @@ export const adentTerms: LegalDocument = {
           `El servicio lo presta ${siteConfig.name} (el "prestador"), con los datos de identificación publicados en sus <a href="${solvorxTerms.path}#quienes-somos">términos generales</a>. Lo contrata una clínica odontológica o un profesional independiente (el "cliente" o la "organización").`,
         ),
         p(
-          `Al crear una organización en ${adentConfig.name} o al usar el servicio, el cliente acepta estas condiciones. Quien acepta declara tener facultades para obligar a la organización que representa.`,
+          `Al crear una organización en ${dentuxConfig.name} o al usar el servicio, el cliente acepta estas condiciones. Quien acepta declara tener facultades para obligar a la organización que representa.`,
         ),
       ],
     },
@@ -299,10 +364,10 @@ export const adentTerms: LegalDocument = {
       title: "2. Qué es el servicio",
       blocks: [
         p(
-          `${adentConfig.name} es un software de gestión que se usa desde el navegador e incluye agenda por profesional, ficha de pacientes, gestión del equipo, recordatorios automáticos de citas y un portal donde el paciente consulta y gestiona su turno.`,
+          `${dentuxConfig.name} es un software de gestión que se usa desde el navegador e incluye agenda por profesional, ficha de pacientes, gestión del equipo, recordatorios automáticos de citas y un portal donde el paciente consulta y gestiona su turno.`,
         ),
         p(
-          `<b>Qué no es:</b> ${adentConfig.name} es una herramienta administrativa. No es un producto sanitario ni un dispositivo médico, no emite diagnósticos, no sustituye el criterio del profesional y no reemplaza los registros clínicos ni los libros que la normativa sanitaria exija llevar a la organización.`,
+          `<b>Qué no es:</b> ${dentuxConfig.name} es una herramienta administrativa. No es un producto sanitario ni un dispositivo médico, no emite diagnósticos, no sustituye el criterio del profesional y no reemplaza los registros clínicos ni los libros que la normativa sanitaria exija llevar a la organización.`,
         ),
       ],
     },
@@ -329,7 +394,7 @@ export const adentTerms: LegalDocument = {
       title: "4. Planes y cupos",
       blocks: [
         p(
-          `${adentConfig.name} se ofrece en planes. Cada plan incluye un cupo de mensajes de recordatorio por ciclo de facturación, diferenciado por canal (correo electrónico y SMS). El cupo se renueva al inicio de cada ciclo y lo no consumido no se acumula.`,
+          `${dentuxConfig.name} se ofrece en planes. Cada plan incluye un cupo de mensajes de recordatorio por ciclo de facturación, diferenciado por canal (correo electrónico y SMS). El cupo se renueva al inicio de cada ciclo y lo no consumido no se acumula.`,
         ),
         p(
           "Cuando el cupo del ciclo se agota, la organización puede comprar saldo adicional de mensajes. Ese saldo es plata ya pagada: no vence al cerrar el ciclo y se conserva ante un cambio o una baja de plan. Se consume después de agotado el cupo del plan.",
@@ -394,7 +459,7 @@ export const adentTerms: LegalDocument = {
           `${siteConfig.name} actúa como encargado del tratamiento: trata esos datos únicamente para prestar el servicio y siguiendo las instrucciones de la organización. No los vende, no los cede a terceros con fines comerciales ni los usa para publicidad.`,
         ),
         p(
-          "Los datos vinculados a la salud reciben el tratamiento reforzado que exige la normativa aplicable, incluidas la Ley N.º 1682/2001 y sus modificatorias y las obligaciones de confidencialidad del Código Sanitario (Ley N.º 836/1980).",
+          "Los datos vinculados a la salud son datos sensibles y reciben el tratamiento reforzado que exige la normativa aplicable: la Ley N.º 7593/2025 de Protección de Datos Personales y las obligaciones de confidencialidad del Código Sanitario (Ley N.º 836/1980).",
         ),
         p(
           "Para prestar el servicio nos apoyamos en proveedores de infraestructura y de envío de mensajes, que acceden a los datos solo en lo necesario y bajo obligación de confidencialidad.",
@@ -445,7 +510,7 @@ export const adentTerms: LegalDocument = {
       title: "12. Propiedad intelectual",
       blocks: [
         p(
-          `${adentConfig.name}, su código, su diseño y su marca son de ${siteConfig.name}. El cliente recibe una licencia de uso no exclusiva, intransferible y limitada a la vigencia de su suscripción.`,
+          `${dentuxConfig.name}, su código, su diseño y su marca son de ${siteConfig.name}. El cliente recibe una licencia de uso no exclusiva, intransferible y limitada a la vigencia de su suscripción.`,
         ),
         p(
           "El contenido que la organización carga sigue siendo suyo. Nos autoriza a alojarlo y procesarlo en la medida necesaria para prestar el servicio.",
@@ -469,7 +534,7 @@ export const adentTerms: LegalDocument = {
       title: "14. Cambios en el servicio y en estas condiciones",
       blocks: [
         p(
-          `${adentConfig.name} es un producto en evolución: podemos agregar, modificar o discontinuar funcionalidades. Si un cambio reduce de forma sustancial el servicio contratado, lo avisaremos con antelación razonable y la organización podrá darse de baja sin penalidad.`,
+          `${dentuxConfig.name} es un producto en evolución: podemos agregar, modificar o discontinuar funcionalidades. Si un cambio reduce de forma sustancial el servicio contratado, lo avisaremos con antelación razonable y la organización podrá darse de baja sin penalidad.`,
         ),
         p(
           "La versión vigente de estas condiciones es la publicada en esta página, con su fecha de última actualización.",
@@ -494,10 +559,10 @@ export const adentTerms: LegalDocument = {
     {
       id: "ley-aplicable",
       title: "16. Ley aplicable y jurisdicción",
-      blocks: applicableLaw("el uso de " + adentConfig.name),
+      blocks: applicableLaw("el uso de " + dentuxConfig.name),
     },
-    { ...contactSection(adentConfig.name), title: "17. Contacto" },
+    { ...contactSection(dentuxConfig.name), title: "17. Contacto" },
   ],
 };
 
-export const legalDocuments = [solvorxTerms, adentTerms];
+export const legalDocuments = [solvorxTerms, dentuxTerms];

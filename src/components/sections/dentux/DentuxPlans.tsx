@@ -3,17 +3,17 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Reveal } from "@/components/ui/Reveal";
 import {
-  adentBillingNotice,
-  adentConfig,
-  adentPlans,
-  type AdentPlan,
-} from "@/lib/adent";
+  dentuxBillingNotice,
+  dentuxConfig,
+  dentuxPlans,
+  type DentuxPlan,
+} from "@/lib/dentux";
 import { waLink } from "@/lib/site";
 
 const formatQuota = (value: number) =>
   new Intl.NumberFormat("es-PY").format(value);
 
-function quotaLines(plan: AdentPlan) {
+function quotaLines(plan: DentuxPlan) {
   return [
     `${formatQuota(plan.quota.email)} recordatorios por correo al mes`,
     `${formatQuota(plan.quota.sms)} recordatorios por SMS al mes`,
@@ -21,12 +21,12 @@ function quotaLines(plan: AdentPlan) {
 }
 
 /**
- * Planes de ADent. Todavía no se muestran precios: los cobros en línea están
- * en implementación (ver `adentBillingNotice` y la cláusula de pagos de
+ * Planes de DentuX. Todavía no se muestran precios: los cobros en línea están
+ * en implementación (ver `dentuxBillingNotice` y la cláusula de pagos de
  * `src/lib/legal.ts`, que tienen que decir lo mismo). Los cupos son espejo del
- * catálogo real de `adent-service`.
+ * catálogo real de `sx-dentux-service`.
  */
-export function AdentPlans() {
+export function DentuxPlans() {
   return (
     <section
       id="planes"
@@ -49,7 +49,7 @@ export function AdentPlans() {
         </Reveal>
 
         <ul className="mt-14 grid gap-5 md:grid-cols-2">
-          {adentPlans.map((plan, i) => (
+          {dentuxPlans.map((plan, i) => (
             <Reveal
               as="li"
               key={plan.code}
@@ -110,12 +110,12 @@ export function AdentPlans() {
         >
           <p className="text-sm leading-relaxed text-brand-slate/75">
             <b className="font-semibold text-brand-ink">Sobre los precios:</b>{" "}
-            {adentBillingNotice}{" "}
+            {dentuxBillingNotice}{" "}
             <Link
-              href={adentConfig.termsPath}
+              href={dentuxConfig.termsPath}
               className="font-medium text-brand-blue underline underline-offset-2"
             >
-              Ver términos y condiciones de {adentConfig.name}
+              Ver términos y condiciones de {dentuxConfig.name}
             </Link>
             .
           </p>

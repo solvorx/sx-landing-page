@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { AdentHero } from "@/components/sections/adent/AdentHero";
-import { AdentPlans } from "@/components/sections/adent/AdentPlans";
+import { DentuxHero } from "@/components/sections/dentux/DentuxHero";
+import { DentuxPlans } from "@/components/sections/dentux/DentuxPlans";
 import { CtaBanner } from "@/components/sections/CtaBanner";
 import { Faq } from "@/components/sections/Faq";
 import { Features } from "@/components/sections/Features";
@@ -9,34 +9,34 @@ import { JsonLd } from "@/components/seo/JsonLd";
 import { Footer } from "@/components/site/Footer";
 import { Header } from "@/components/site/Header";
 import {
-  adentConfig,
-  adentCta,
-  adentFaq,
-  adentFeatures,
-  adentSteps,
-} from "@/lib/adent";
+  dentuxConfig,
+  dentuxCta,
+  dentuxFaq,
+  dentuxFeatures,
+  dentuxSteps,
+} from "@/lib/dentux";
 import { siteConfig } from "@/lib/site";
 
-const title = `${adentConfig.name} — ${adentConfig.tagline}`;
-const url = `${siteConfig.url}${adentConfig.path}`;
+const title = `${dentuxConfig.name} — ${dentuxConfig.tagline}`;
+const url = `${siteConfig.url}${dentuxConfig.path}`;
 
 export const metadata: Metadata = {
   title,
-  description: adentConfig.description,
-  keywords: [...adentConfig.keywords],
-  alternates: { canonical: adentConfig.path },
+  description: dentuxConfig.description,
+  keywords: [...dentuxConfig.keywords],
+  alternates: { canonical: dentuxConfig.path },
   openGraph: {
     type: "website",
     locale: siteConfig.locale,
     url,
     siteName: siteConfig.name,
     title,
-    description: adentConfig.description,
+    description: dentuxConfig.description,
   },
   twitter: {
     card: "summary_large_image",
     title,
-    description: adentConfig.description,
+    description: dentuxConfig.description,
   },
 };
 
@@ -45,7 +45,7 @@ const stripHtml = (html: string) => html.replace(/<[^>]+>/g, "");
 
 /**
  * Sin `offers`: los precios todavía no están definidos ni los cobros en línea
- * habilitados (ver `adentBillingNotice`). Un Offer sin precio real sería una
+ * habilitados (ver `dentuxBillingNotice`). Un Offer sin precio real sería una
  * promesa que la página no cumple; se agrega cuando exista la lista de precios.
  */
 const jsonLd = [
@@ -53,14 +53,14 @@ const jsonLd = [
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "@id": `${url}/#software`,
-    name: adentConfig.name,
+    name: dentuxConfig.name,
     url,
-    applicationCategory: adentConfig.applicationCategory,
+    applicationCategory: dentuxConfig.applicationCategory,
     applicationSubCategory: "Software de gestión odontológica",
     operatingSystem: "Web",
-    description: adentConfig.description,
+    description: dentuxConfig.description,
     inLanguage: "es",
-    featureList: adentFeatures.map((feature) => feature.title),
+    featureList: dentuxFeatures.map((feature) => feature.title),
     audience: {
       "@type": "Audience",
       audienceType: "Clínicas odontológicas y profesionales independientes",
@@ -78,13 +78,13 @@ const jsonLd = [
         name: siteConfig.name,
         item: siteConfig.url,
       },
-      { "@type": "ListItem", position: 2, name: adentConfig.name, item: url },
+      { "@type": "ListItem", position: 2, name: dentuxConfig.name, item: url },
     ],
   },
   {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: adentFaq.map((item) => ({
+    mainEntity: dentuxFaq.map((item) => ({
       "@type": "Question",
       name: item.question,
       acceptedAnswer: { "@type": "Answer", text: stripHtml(item.answer) },
@@ -92,32 +92,32 @@ const jsonLd = [
   },
 ];
 
-export default function AdentPage() {
+export default function DentuxPage() {
   return (
     <>
       <JsonLd data={jsonLd} />
       <Header variant="solid" />
       <main id="contenido">
-        <AdentHero />
+        <DentuxHero />
         <Features
           id="capacidades"
           title="Todo lo que se agenda, en un solo lugar"
-          body="ADent cubre el día a día administrativo de la clínica: quién atiende, cuándo, a quién y con qué aviso previo."
-          items={adentFeatures}
+          body="DentuX cubre el día a día administrativo de la clínica: quién atiende, cuándo, a quién y con qué aviso previo."
+          items={dentuxFeatures}
         />
         <HowItWorks
           id="como-empezar"
           eyebrow="Cómo empezar"
           title="De la primera charla a la agenda andando"
-          items={adentSteps}
+          items={dentuxSteps}
         />
-        <AdentPlans />
+        <DentuxPlans />
         <Faq
-          eyebrow={`Preguntas sobre ${adentConfig.name}`}
+          eyebrow={`Preguntas sobre ${dentuxConfig.name}`}
           title="Lo que suelen preguntarnos"
-          items={adentFaq}
+          items={dentuxFaq}
         />
-        <CtaBanner content={adentCta} />
+        <CtaBanner content={dentuxCta} />
       </main>
       <Footer />
     </>

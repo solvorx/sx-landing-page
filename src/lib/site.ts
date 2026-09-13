@@ -4,7 +4,7 @@
  * Todo el copy es PLACEHOLDER: reemplazarlo aquí actualiza a la vez las
  * secciones, la metadata, el sitemap, la imagen OG y el JSON-LD.
  *
- * El contenido del producto ADent vive aparte, en `src/lib/adent.ts`; los
+ * El contenido del producto DentuX vive aparte, en `src/lib/dentux.ts`; los
  * términos y condiciones, en `src/lib/legal.ts`.
  */
 
@@ -15,7 +15,7 @@ export const siteConfig = {
   /** Fecha de la última revisión de contenido, usada como `lastmod` del sitemap. */
   lastUpdated: "2026-08-31",
   locale: "es_LA",
-  tagline: "Desarrollo de software a medida e IA en Paraguay",
+  tagline: "Desarrollo de software a medida en Paraguay",
   description:
     "Desarrollamos software a medida, automatizaciones e integraciones de IA para empresas en Paraguay. Del descubrimiento al lanzamiento en semanas.",
   keywords: [
@@ -30,9 +30,10 @@ export const siteConfig = {
   whatsapp: "+595 986 741996",
   telephone: "+595986741996",
   address: {
-    street: "",
-    city: "Asunción",
-    region: "Asunción",
+    street: "Pedro Juan Caballero 2767",
+    city: "Fernando de la Mora",
+    /** Departamento, no ciudad: Fernando de la Mora está en Central. */
+    region: "Central",
     country: "PY",
   },
   social: {
@@ -46,12 +47,12 @@ export const waLink = "https://wa.me/595986741996";
 
 /**
  * Los enlaces de ancla van con `/` adelante: el header y el footer también se
- * renderizan en `/adent` y en las páginas legales, donde un `#servicios` suelto
+ * renderizan en `/dentux` y en las páginas legales, donde un `#servicios` suelto
  * apuntaría a una sección que no existe en esa ruta.
  */
 export const nav = [
   { label: "Servicios", href: "/#servicios" },
-  { label: "ADent", href: "/adent" },
+  { label: "DentuX", href: "/dentux" },
   { label: "Cómo trabajamos", href: "/#proceso" },
   { label: "Contacto", href: "/#contacto" },
 ] as const;
@@ -102,15 +103,15 @@ export const features: Feature[] = [
   },
   {
     icon: "tooth",
-    title: "ADent — software para clínicas dentales",
+    title: "DentuX — software para clínicas dentales",
     body: "Nuestro SaaS para consultorios odontológicos: agenda, pacientes, recordatorios automáticos y portal del paciente.",
-    href: "/adent",
-    cta: "Conocer ADent",
+    href: "https://dentux.solvorx.com",
+    cta: "Conocer DentuX",
   },
   {
     icon: "layers",
     title: "Producto a medida",
-    body: "Landing pages, apps web y móviles e integraciones seguras, diseñadas alrededor de tu operación. Ciclos cortos, datos protegidos y despliegues que no interrumpen el servicio.",
+    body: "Landing pages e integraciones seguras, diseñadas alrededor de tu operación. Ciclos cortos, datos protegidos y despliegues que no interrumpen el servicio.",
   },
 ];
 
@@ -123,11 +124,11 @@ export const steps: Step[] = [
   },
   {
     title: "Prototipo",
-    body: "En dos semanas hay algo funcionando que se puede probar con usuarios reales.",
+    body: "En semanas hay algo funcionando que se puede probar con usuarios reales.",
   },
   {
     title: "Escala",
-    body: "Iteramos, medimos y dejamos el sistema documentado y en manos de tu equipo.",
+    body: "Iteramos, medimos y seguimos con mantenimientos y mejoras.",
   },
 ];
 
@@ -142,17 +143,17 @@ export const faq: FaqItem[] = [
   {
     question: "¿Cuánto tiempo toma un proyecto?",
     answer:
-      "El primer prototipo funcional suele estar listo en dos semanas. De ahí iteramos en ciclos cortos hasta escalar el sistema completo, en vez de entregar todo junto al final de un trimestre.",
+      "El primer prototipo funcional suele estar listo en semanas. De ahí iteramos en ciclos cortos hasta escalar el sistema completo, en vez de entregar todo junto al final de un trimestre.",
   },
   {
     question: "¿Tienen productos propios que pueda contratar ya?",
     answer:
-      'Sí. <b>ADent</b> es nuestro SaaS para clínicas odontológicas y profesionales independientes: agenda, pacientes, recordatorios automáticos y portal del paciente. <a href="/adent">Conocé ADent</a>.',
+      'Sí. <b>DentuX</b> es nuestro SaaS para clínicas odontológicas y profesionales independientes: agenda, pacientes, recordatorios automáticos y portal del paciente. <a href="/dentux">Conocé DentuX</a>.',
   },
   {
     question: "¿Ofrecen dominio?",
     answer:
-      "Sí, ofrecemos dominio de SolvorX para apps de forma gratuita <b>minegocio.solvorx.app</b> <br> Para dominios personalizados, ofrecemos asistencia en la compra y configuración.",
+      "Sí, te ayudamos a gestionar tu dominio: te asistimos en la elección, compra y configuración, ya sea un dominio propio o un subdominio de SolvorX.",
   },
   {
     question: "¿Ofrecen soporte después del lanzamiento?",
@@ -185,7 +186,7 @@ export const footerLinks = [
     title: "Servicios",
     links: [
       { label: "Ver servicios", href: "/#servicios" },
-      { label: "ADent — software dental", href: "/adent" },
+      { label: "DentuX — software dental", href: "/dentux" },
     ],
   },
   {
@@ -200,7 +201,7 @@ export const footerLinks = [
     title: "Legal",
     links: [
       { label: "Términos y condiciones", href: "/terminos" },
-      { label: "Términos de ADent", href: "/adent/terminos" },
+      { label: "Términos de DentuX", href: "/dentux/terminos" },
     ],
   },
 ] as const;

@@ -14,17 +14,17 @@ pnpm lint
 | Ruta              | Qué es                                        |
 | ----------------- | --------------------------------------------- |
 | `/`               | Inicio: portada, servicios, proceso, FAQ, CTA. |
-| `/adent`          | Vista del SaaS ADent (gestión odontológica).   |
+| `/dentux`          | Vista del SaaS DentuX (gestión odontológica).   |
 | `/terminos`       | Términos y condiciones de SolvorX.             |
-| `/adent/terminos` | Términos y condiciones de ADent.               |
+| `/dentux/terminos` | Términos y condiciones de DentuX.               |
 
 ## Dónde tocar qué
 
 - **Contenido del inicio** (copy, nav, servicios, pasos, FAQ, footer, datos de
   la empresa) vive en [`src/lib/site.ts`](src/lib/site.ts): de ahí salen
   también la metadata, el sitemap, la imagen OG y el JSON-LD de organización.
-- **Contenido de ADent**: [`src/lib/adent.ts`](src/lib/adent.ts). Los cupos de
-  mensajes de cada plan son espejo del catálogo real de `adent-service`
+- **Contenido de DentuX**: [`src/lib/dentux.ts`](src/lib/dentux.ts). Los cupos de
+  mensajes de cada plan son espejo del catálogo real de `sx-dentux-service`
   (`prisma/seed.ts`, tabla `billing.plan`).
 - **Términos y condiciones**: [`src/lib/legal.ts`](src/lib/legal.ts) tiene los
   dos documentos como datos y
@@ -43,15 +43,15 @@ pnpm lint
 - **Logos**: `public/brand/`. El isotipo SX de la portada está en línea en
   `src/components/brand/SxIsotype.tsx`.
 - **Secciones reutilizables**: `Features`, `HowItWorks`, `Faq` y `CtaBanner`
-  reciben su contenido por props (por defecto, el del inicio). `/adent` las
-  reusa con el contenido de `adent.ts`.
+  reciben su contenido por props (por defecto, el del inicio). `/dentux` las
+  reusa con el contenido de `dentux.ts`.
 
 ## SEO
 
 El layout emite el JSON-LD de alcance global (`ProfessionalService` con el
 `OfferCatalog` de los servicios, y `WebSite`). Cada vista agrega el suyo con
 [`<JsonLd>`](src/components/seo/JsonLd.tsx): `VideoObject` + `FAQPage` en el
-inicio; `SoftwareApplication` + `BreadcrumbList` + `FAQPage` en `/adent`. Un
+inicio; `SoftwareApplication` + `BreadcrumbList` + `FAQPage` en `/dentux`. Un
 `FAQPage` en el layout aparecería también en `/terminos`, donde no hay FAQ
 visible que lo respalde.
 
@@ -64,17 +64,19 @@ Cada `FAQPage` tiene su contraparte visible en
 [`Faq.tsx`](src/components/sections/Faq.tsx) — Google no otorga el rich result
 si el contenido estructurado no está también renderizado en la página.
 
-`/adent` no declara `offers`: todavía no hay lista de precios publicada.
+`/dentux` no declara `offers`: todavía no hay lista de precios publicada.
 
 ## Pendiente antes de publicar
 
 - **Revisión legal de los términos**: los documentos de `src/lib/legal.ts` son
   una base redactada sobre el producto real, sin revisión de un abogado.
-- **Completar `legalEntity`** (razón social y RUC) en `src/lib/legal.ts`;
-  mientras estén vacíos, esas líneas no se publican.
+- **Decidir la modalidad de entrega** (cesión vs. licencia con alojamiento
+  propio) en la sección "Titularidad del software".
+- **Evaluar una casilla de dominio propio** en lugar del Gmail personal que
+  hoy figura en los términos como dirección electrónica del prestador.
 - **Reescribir la cláusula de pagos** de ambos documentos y el aviso
-  `adentBillingNotice` cuando el PSP entre en producción.
-- Confirmar cupos y precios de los planes de ADent.
+  `dentuxBillingNotice` cuando el PSP entre en producción.
+- Confirmar cupos y precios de los planes de DentuX.
 - Reescribir el copy de `features` y `steps` en `src/lib/site.ts` con
   orientación a keywords (title, description, `h1` y FAQ ya lo están).
 - Elegir la variante de deploy (ver abajo) y aplicar su configuración.

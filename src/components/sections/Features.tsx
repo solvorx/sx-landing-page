@@ -37,8 +37,8 @@ function FeatureIcon({ feature, index }: { feature: Feature; index: number }) {
 
 /**
  * Grilla de servicios. Se usa en el inicio con `features` de site.ts y en
- * `/adent` con las capacidades del producto. Una tarjeta con `href` es un
- * enlace completo a la vista de ese servicio (hoy, ADent).
+ * `/dentux` con las capacidades del producto. Una tarjeta con `href` es un
+ * enlace completo a la vista de ese servicio (hoy, DentuX).
  */
 export function Features({
   id = "servicios",
@@ -73,20 +73,19 @@ export function Features({
         </Reveal>
 
         <ul className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-          {items.map((feature, i) => (
-            <Reveal as="li" key={feature.title} delay={i * 0.06}>
-              {feature.href ? (
-                <Link
-                  href={feature.href}
-                  className="group block -m-4 rounded-4xl p-4 transition-colors hover:bg-brand-ink/[0.03]"
-                >
-                  <FeatureIcon feature={feature} index={i} />
-                  <h3 className="mt-5 font-display text-lg font-semibold text-brand-ink">
-                    {feature.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-brand-slate/65">
-                    {feature.body}
-                  </p>
+          {items.map((feature, i) => {
+            const cardClassName =
+              "group block -m-4 rounded-4xl p-4 transition-colors hover:bg-brand-ink/[0.03]";
+            const cardContent = (
+              <>
+                <FeatureIcon feature={feature} index={i} />
+                <h3 className="mt-5 font-display text-lg font-semibold text-brand-ink">
+                  {feature.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-brand-slate/65">
+                  {feature.body}
+                </p>
+                {feature.href && (
                   <span className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-brand-blue">
                     {feature.cta ?? "Ver más"}
                     <span
@@ -96,20 +95,31 @@ export function Features({
                       →
                     </span>
                   </span>
-                </Link>
-              ) : (
-                <>
-                  <FeatureIcon feature={feature} index={i} />
-                  <h3 className="mt-5 font-display text-lg font-semibold text-brand-ink">
-                    {feature.title}
-                  </h3>
-                  <p className="mt-2 text-sm leading-relaxed text-brand-slate/65">
-                    {feature.body}
-                  </p>
-                </>
-              )}
-            </Reveal>
-          ))}
+                )}
+              </>
+            );
+
+            return (
+              <Reveal as="li" key={feature.title} delay={i * 0.06}>
+                {feature.href?.startsWith("http") ? (
+                  <a
+                    href={feature.href}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className={cardClassName}
+                  >
+                    {cardContent}
+                  </a>
+                ) : feature.href ? (
+                  <Link href={feature.href} className={cardClassName}>
+                    {cardContent}
+                  </Link>
+                ) : (
+                  cardContent
+                )}
+              </Reveal>
+            );
+          })}
         </ul>
       </div>
     </section>

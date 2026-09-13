@@ -10,7 +10,7 @@ const shell = {
    */
   overlay: "absolute inset-x-0 top-0 z-50 h-(--header-h) bg-white",
   /**
-   * Vistas interiores (`/adent`, legales): no hay polígono que respetar, así
+   * Vistas interiores (`/dentux`, legales): no hay polígono que respetar, así
    * que la barra queda fija arriba. El `scroll-mt-(--header-h)` de las
    * secciones evita que tape los anclajes.
    */

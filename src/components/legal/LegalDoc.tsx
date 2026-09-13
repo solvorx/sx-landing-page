@@ -15,7 +15,7 @@ const linkStyles =
  * Documento legal: encabezado con la fecha de vigencia, índice lateral fijo y
  * el articulado. El contenido llega entero desde `src/lib/legal.ts`; este
  * componente solo lo maqueta, así que sirve igual para los términos de
- * SolvorX y para los de ADent.
+ * SolvorX y para los de DentuX.
  */
 export function LegalDoc({
   document,

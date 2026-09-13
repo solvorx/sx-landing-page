@@ -85,6 +85,7 @@ const jsonLd = [
     telephone: siteConfig.telephone,
     address: {
       "@type": "PostalAddress",
+      streetAddress: siteConfig.address.street,
       addressLocality: siteConfig.address.city,
       addressRegion: siteConfig.address.region,
       addressCountry: siteConfig.address.country,

@@ -6,7 +6,7 @@ import { faq as siteFaq, type FaqItem } from "@/lib/site";
  * Preguntas frecuentes, en `<details>/<summary>` nativos (el marcador se
  * oculta vía CSS en globals.css). El contenido tiene que ser visible en la
  * página: es lo que hace válido el rich result `FAQPage` que se emite en
- * layout.tsx (inicio) y en `/adent` para el FAQ del producto, además de ser
+ * layout.tsx (inicio) y en `/dentux` para el FAQ del producto, además de ser
  * el copy más denso en keywords de cada vista.
  */
 export function Faq({
@@ -56,7 +56,7 @@ export function Faq({
               </summary>
               <p
                 className="mt-3 text-sm leading-relaxed text-brand-slate/65 [&_a]:font-medium [&_a]:text-brand-blue [&_a]:underline [&_a]:underline-offset-2"
-                // item.answer es copy estático de site.ts / adent.ts (no
+                // item.answer es copy estático de site.ts / dentux.ts (no
                 // entrada de usuario): puede traer HTML simple (<b>, <a>, etc.).
                 dangerouslySetInnerHTML={{ __html: item.answer }}
               />

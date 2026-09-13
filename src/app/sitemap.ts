@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { adentConfig } from "@/lib/adent";
+import { dentuxConfig } from "@/lib/dentux";
 import { legalDocuments } from "@/lib/legal";
 import { siteConfig } from "@/lib/site";
 
@@ -12,7 +12,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${siteConfig.url}${adentConfig.path}`,
+      url: `${siteConfig.url}${dentuxConfig.path}`,
       lastModified: new Date(siteConfig.lastUpdated),
       changeFrequency: "monthly",
       priority: 0.9,

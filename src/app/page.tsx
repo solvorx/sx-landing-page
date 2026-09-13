@@ -14,7 +14,7 @@ const stripHtml = (html: string) => html.replace(/<[^>]+>/g, "");
 
 /**
  * JSON-LD propio del inicio: el video y el FAQ solo existen en esta vista, así
- * que no pueden vivir en el layout (aparecerían en `/adent` y en las páginas
+ * que no pueden vivir en el layout (aparecerían en `/dentux` y en las páginas
  * legales, donde Google no encontraría el contenido visible que los respalda).
  */
 const jsonLd = [

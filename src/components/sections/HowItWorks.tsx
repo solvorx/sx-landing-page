@@ -1,27 +1,39 @@
 import { Badge } from "@/components/ui/Badge";
 import { Reveal } from "@/components/ui/Reveal";
-import { steps } from "@/lib/site";
+import { steps as siteSteps, type Step } from "@/lib/site";
 
-export function HowItWorks() {
+export function HowItWorks({
+  id = "proceso",
+  eyebrow = "Cómo trabajamos",
+  title = "Tres fases, sin sorpresas",
+  items = siteSteps,
+}: {
+  id?: string;
+  eyebrow?: string;
+  title?: string;
+  items?: Step[];
+}) {
+  const titleId = `${id}-title`;
+
   return (
     <section
-      id="proceso"
-      aria-labelledby="proceso-title"
-      className="bg-white py-20 lg:py-24"
+      id={id}
+      aria-labelledby={titleId}
+      className="scroll-mt-(--header-h) bg-white py-20 lg:py-24"
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <Reveal className="mx-auto max-w-2xl text-center">
-          <Badge>Cómo trabajamos</Badge>
+          <Badge>{eyebrow}</Badge>
           <h2
-            id="proceso-title"
+            id={titleId}
             className="mt-6 font-display text-3xl font-semibold text-balance text-brand-ink lg:text-4xl"
           >
-            Tres fases, sin sorpresas
+            {title}
           </h2>
         </Reveal>
 
         <ol className="mt-14 grid gap-5 md:grid-cols-3">
-          {steps.map((step, i) => (
+          {items.map((step, i) => (
             <Reveal
               as="li"
               key={step.title}

@@ -54,7 +54,7 @@ export const dentuxFeatures: Feature[] = [
   {
     icon: "bell",
     title: "Recordatorios automáticos",
-    body: "Avisos por correo y SMS antes de cada cita. Menos ausencias y menos tiempo de recepción al teléfono confirmando uno por uno.",
+    body: "Avisos por correo electrónico antes de cada cita. Menos ausencias y menos tiempo de recepción al teléfono confirmando uno por uno.",
   },
   {
     icon: "spark",
@@ -92,8 +92,12 @@ export type DentuxPlan = {
   code: string;
   name: string;
   summary: string;
-  /** Cupo de mensajes por ciclo de facturación, espejo de `billing.plan`. */
-  quota: { email: number; sms: number };
+  /** Cupo de mensajes por ciclo de facturación, espejo de `billing.plan.entitlements`. */
+  quota: { email: number };
+  /** Usuarios con acceso a la vez, espejo de `billing.plan.max_users`. */
+  maxUsers: number;
+  /** Turnos por mes calendario, espejo de `billing.plan.max_appointments_per_month`. */
+  maxAppointmentsPerMonth: number;
   includes: string[];
   featured?: boolean;
 };
@@ -103,35 +107,38 @@ export const dentuxPlans: DentuxPlan[] = [
     code: "free",
     name: "Free",
     summary: "Para arrancar y ordenar la agenda de un consultorio chico.",
-    quota: { email: 1000, sms: 200 },
+    quota: { email: 20 },
+    maxUsers: 1,
+    maxAppointmentsPerMonth: 100,
     includes: [
-      "Agenda, pacientes y profesionales sin límite",
+      "Agenda, pacientes y profesionales",
       "Portal del paciente",
       "Recordatorios automáticos dentro del cupo",
+      "Packs de mensajes cuando el cupo no alcanza, sin vencimiento",
     ],
   },
   {
     code: "standard",
     name: "Standard",
     summary: "Para clínicas con varios sillones y agenda llena todo el día.",
-    quota: { email: 5000, sms: 1000 },
+    quota: { email: 5000 },
+    maxUsers: 15,
+    maxAppointmentsPerMonth: 500,
     includes: [
       "Todo lo del plan Free",
       "Cupo de recordatorios ampliado",
-      "Saldo adicional de mensajes cuando el cupo no alcanza",
     ],
     featured: true,
   },
 ];
 
 /**
- * Estado de los cobros. Los pagos en línea con la pasarela todavía están en
- * implementación: hasta que estén, el alta y el cambio de plan se coordinan
- * por WhatsApp. Este aviso y la cláusula de pagos de los términos
- * (`src/lib/legal.ts`) tienen que decir lo mismo.
+ * Cómo se paga. Este aviso, la pregunta frecuente de pagos y la cláusula
+ * "Cómo se paga" de los términos (`src/lib/legal.ts`) tienen que decir lo
+ * mismo: hoy, checkout de SolvorX con transferencia y confirmación manual.
  */
 export const dentuxBillingNotice =
-  "Estamos habilitando los pagos en línea. Mientras tanto, el alta y el cambio de plan se coordinan por WhatsApp y los precios vigentes te los pasamos en esa conversación.";
+  "Los planes se contratan desde el panel de DentuX y se pagan en el checkout de SolvorX, hoy por transferencia bancaria. El precio vigente lo ves antes de confirmar, y el plan se activa cuando se confirma la transferencia.";
 
 export const dentuxFaq: FaqItem[] = [
   {
@@ -147,7 +154,7 @@ export const dentuxFaq: FaqItem[] = [
   {
     question: "¿Cómo recibe el paciente su recordatorio?",
     answer:
-      "Por correo electrónico o SMS antes de la cita, con un enlace de un solo uso para confirmar, reprogramar o cancelar sin crearse una cuenta.",
+      "Por correo electrónico antes de la cita, con un enlace de un solo uso para confirmar, reprogramar o cancelar sin crearse una cuenta.",
   },
   {
     question: "¿Puedo probar DentuX sin pagar?",
@@ -157,7 +164,7 @@ export const dentuxFaq: FaqItem[] = [
   {
     question: "¿Cómo se paga DentuX?",
     answer:
-      "Estamos habilitando los pagos en línea con una pasarela local. Hasta que estén disponibles, el alta y el cambio de plan se coordinan por WhatsApp.",
+      "Desde el panel de DentuX elegís el plan y lo pagás en el checkout de SolvorX, hoy por transferencia bancaria. El plan se activa cuando confirmamos la transferencia, y la baja la pedís desde tu cuenta de SolvorX cuando quieras.",
   },
   {
     question: "¿De quién son los datos de mis pacientes?",

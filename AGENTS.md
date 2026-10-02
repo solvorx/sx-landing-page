@@ -27,9 +27,10 @@ Landing page de SolvorX (Next.js 16 App Router, TypeScript, Tailwind v4, `motion
   la empresa): [`src/lib/site.ts`](src/lib/site.ts). De ahí salen también
   metadata, sitemap, imagen OG y el JSON-LD de organización.
 - **Contenido de DentuX**: [`src/lib/dentux.ts`](src/lib/dentux.ts) — hero,
-  capacidades, pasos, planes y FAQ del producto. Los cupos de mensajes de cada
-  plan son **espejo del catálogo real** de `sx-dentux-service`
-  (`prisma/seed.ts`, tabla `billing.plan`): si cambian allá, cambian acá.
+  capacidades, pasos, planes y FAQ del producto. Los límites de cada plan
+  (usuarios, turnos por mes y cupo de correos) son **espejo del catálogo
+  real** de `sx-dentux-service` (`prisma/seed.ts`, tabla `billing.plan`): si
+  cambian allá, cambian acá. Los términos de DentuX los leen de ahí.
 - **Términos y condiciones**: [`src/lib/legal.ts`](src/lib/legal.ts) contiene
   los dos documentos (SolvorX y DentuX) como datos;
   [`LegalDoc.tsx`](src/components/legal/LegalDoc.tsx) solo los maqueta. Ese
@@ -61,8 +62,8 @@ también en las rutas que no muestran ese FAQ y Google no lo validaría: el
 contenido estructurado tiene que estar visible en la misma página, y de eso se
 encarga [`Faq.tsx`](src/components/sections/Faq.tsx).
 
-`/dentux` no declara `offers` en su `SoftwareApplication`: no hay lista de
-precios publicada todavía.
+`/dentux` no declara `offers` en su `SoftwareApplication`: la landing no
+publica la lista de precios (se ve en vivo en el panel y en el checkout).
 
 ## Pendiente antes de publicar
 
@@ -75,12 +76,14 @@ precios publicada todavía.
 - **Evaluar una casilla de dominio propio** (por ejemplo `hola@solvorx.com`)
   que reemplace al Gmail personal publicado en los términos: el art. 7 de la
   Ley N.º 4868/2013 exige una dirección electrónica, pero no que sea personal.
-- **Reescribir la cláusula de pagos** de ambos documentos y el aviso
-  `dentuxBillingNotice` cuando el PSP entre en producción — hoy los tres dicen
-  que los cobros en línea están en implementación y tienen que seguir diciendo
-  lo mismo entre sí.
-- Confirmar los cupos y los precios de los planes de DentuX antes de publicar
-  `/dentux` (hoy se muestran cupos sin precio).
+- **Sumar Pagopar a los medios de pago** cuando la cuenta quede habilitada
+  para servicios virtuales: la cláusula "Pagos en línea" de SolvorX, "Cómo se
+  paga" de DentuX, el aviso `dentuxBillingNotice` y la FAQ de pagos hoy dicen
+  "solo transferencia" y tienen que seguir diciendo lo mismo entre sí.
+- **Plazos de la suscripción** en los términos de DentuX (`subscriptionPolicy`
+  en `legal.ts`): espejo de la política del proyecto `dentux` en sx-payment
+  (gracia 5, mora 15, cobro 5 días antes, aviso de suba 30). Confirmar que
+  prod usa esos valores.
 - Reescribir el copy de `features` y `steps` en `src/lib/site.ts` con
   orientación a keywords (title, description, `h1` y FAQ ya están orientados).
 - Definir la variante de deploy en Firebase (export estático vs. App

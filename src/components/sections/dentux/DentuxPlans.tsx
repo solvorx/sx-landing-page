@@ -15,16 +15,19 @@ const formatQuota = (value: number) =>
 
 function quotaLines(plan: DentuxPlan) {
   return [
+    plan.maxUsers === 1
+      ? "1 usuario con acceso"
+      : `Hasta ${formatQuota(plan.maxUsers)} usuarios con acceso`,
+    `Hasta ${formatQuota(plan.maxAppointmentsPerMonth)} turnos por mes`,
     `${formatQuota(plan.quota.email)} recordatorios por correo al mes`,
-    `${formatQuota(plan.quota.sms)} recordatorios por SMS al mes`,
   ];
 }
 
 /**
- * Planes de DentuX. Todavía no se muestran precios: los cobros en línea están
- * en implementación (ver `dentuxBillingNotice` y la cláusula de pagos de
- * `src/lib/legal.ts`, que tienen que decir lo mismo). Los cupos son espejo del
- * catálogo real de `sx-dentux-service`.
+ * Planes de DentuX. No se muestran precios: se ven en el panel y en el
+ * checkout, en vivo desde sx-payment (ver `dentuxBillingNotice` y la cláusula
+ * "Cómo se paga" de `src/lib/legal.ts`, que tienen que decir lo mismo). Los
+ * límites son espejo del catálogo real de `sx-dentux-service`.
  */
 export function DentuxPlans() {
   return (
@@ -43,8 +46,9 @@ export function DentuxPlans() {
             Empezá gratis y crecé cuando la agenda lo pida
           </h2>
           <p className="mt-4 text-base leading-relaxed text-brand-slate/65">
-            La diferencia entre planes está en el cupo de recordatorios. Agenda,
-            pacientes y portal del paciente están en todos.
+            La diferencia entre planes está en el equipo, los turnos por mes y
+            el cupo de recordatorios. Agenda, pacientes y portal del paciente
+            están en todos.
           </p>
         </Reveal>
 

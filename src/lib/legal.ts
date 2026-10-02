@@ -6,20 +6,28 @@
  * (`/dentux/terminos`, enlazados desde la vista del producto). Los renderiza
  * `components/legal/LegalDoc.tsx`.
  *
+ * Espejos de otros repos (si cambian allá, cambian acá y se mueve `updatedAt`):
+ *
+ * - Límites de cada plan de DentuX: salen de `dentuxPlans` (`lib/dentux.ts`),
+ *   que a su vez espeja `billing.plan` de `sx-dentux-service`.
+ * - Plazos de la suscripción (`subscriptionPolicy`): son la política del
+ *   proyecto de pago `dentux` en `sx-payment-service` (`PaymentProject`:
+ *   gracia, mora, anticipación del cobro y aviso de suba de precio).
+ * - Medios de pago: hoy solo transferencia con confirmación manual. Cuando
+ *   Pagopar quede habilitado para servicios virtuales, sumarlo a
+ *   las cláusulas de medios de pago de los dos documentos y revisar la de
+ *   reintentos.
+ *
  * Pendiente antes de considerarlos definitivos:
  *
- * 1. La cláusula de pagos describe el estado real de hoy — cobros en línea con
- *    pasarela todavía en implementación. Cuando el PSP entre en producción hay
- *    que reescribir esa cláusula (medios de pago, moneda, reintentos,
- *    reembolsos) y mover `updatedAt`.
- * 2. La modalidad de entrega de la sección "Titularidad del software" está
+ * 1. La modalidad de entrega de la sección "Titularidad del software" está
  *    escrita para cubrir las dos opciones (cesión al cliente vs. licencia con
  *    alojamiento propio). Cuando el modelo de negocio se decida, conviene
  *    dejar solo la que aplique.
  */
 
 import { siteConfig, waLink } from "@/lib/site";
-import { dentuxConfig } from "@/lib/dentux";
+import { dentuxConfig, dentuxPlans } from "@/lib/dentux";
 
 /**
  * Datos del prestador. Es una empresa unipersonal: el titular es una persona
@@ -128,6 +136,30 @@ const applicableLaw = (subject: string): LegalBlock[] => [
   ),
 ];
 
+/**
+ * Política de suscripción del proyecto de pago `dentux` en sx-payment. Se
+ * copia a cada suscripción al darse de alta, así que bajar un plazo allá no
+ * alcanza a quien ya estaba suscripto: acá se publica el valor vigente para
+ * las altas nuevas.
+ */
+const subscriptionPolicy = {
+  graceDays: 5,
+  dueDays: 15,
+  billingLeadDays: 5,
+  priceChangeNoticeDays: 30,
+};
+
+const formatNumber = (value: number) =>
+  new Intl.NumberFormat("es-PY").format(value);
+
+const planLimits: string[] = dentuxPlans.map((plan) => {
+  const users =
+    plan.maxUsers === 1
+      ? "1 usuario con acceso"
+      : `hasta ${plan.maxUsers} usuarios con acceso`;
+  return `<b>${plan.name}:</b> ${users}, hasta ${formatNumber(plan.maxAppointmentsPerMonth)} turnos por mes y ${formatNumber(plan.quota.email)} recordatorios por correo electrónico por ciclo.`;
+});
+
 const contactSection = (subject: string): LegalSection => ({
   id: "contacto",
   title: "Contacto",
@@ -145,7 +177,7 @@ export const solvorxTerms: LegalDocument = {
   title: "Términos y condiciones",
   description: `Términos y condiciones de uso del sitio y de contratación de los servicios de ${siteConfig.name} en Paraguay.`,
   summary: `Estas condiciones regulan el uso de este sitio y la contratación de los servicios de ${siteConfig.name}. Están escritas en lenguaje simple a propósito: si algo no queda claro, preguntanos antes de contratar.`,
-  updatedAt: "2026-09-04",
+  updatedAt: "2026-09-30",
   sections: [
     {
       id: "quienes-somos",
@@ -210,19 +242,52 @@ export const solvorxTerms: LegalDocument = {
       title: "6. Precios, pagos y facturación",
       blocks: [
         p(
-          "Los precios se informan en la propuesta, en guaraníes o en dólares estadounidenses según se acuerde, e indican si incluyen o no el IVA.",
+          "<b>Proyectos a medida.</b> Los precios se informan en la propuesta, en guaraníes o en dólares estadounidenses según se acuerde, e indican si incluyen o no el IVA. Se pagan por transferencia bancaria o por el medio que la propuesta indique.",
         ),
         p(
-          "<b>Estado actual de los cobros:</b> todavía estamos integrando una pasarela de pagos. Hasta que esté disponible, los pagos se realizan por transferencia bancaria o por el medio que se acuerde por escrito en la propuesta. Cuando habilitemos el pago en línea, actualizaremos esta cláusula con los medios de pago, la moneda y las condiciones de reembolso aplicables.",
+          "<b>Productos por suscripción.</b> Se contratan y se pagan en línea, a través del checkout de pagos descrito en la cláusula siguiente. Cada producto publica sus propias condiciones de planes, renovación y baja.",
         ),
         p(
-          "Emitimos comprobante legal por cada pago. La demora en un pago habilita a suspender los trabajos en curso hasta su regularización, previo aviso.",
+          "Emitimos comprobante legal por cada pago, a nombre de los datos de facturación que indique quien paga. La demora en un pago habilita a suspender los trabajos en curso hasta su regularización, previo aviso.",
         ),
       ],
     },
     {
+      id: "pagos-en-linea",
+      title: "7. Pagos en línea",
+      blocks: [
+        p(
+          `${siteConfig.name} opera un checkout propio para cobrar sus productos. Antes de confirmar, el checkout muestra quién cobra, el concepto, el importe y la moneda. El pago queda registrado recién cuando se confirma en el checkout: abrir el enlace no genera ningún cargo.`,
+        ),
+        list([
+          `Para pagar hace falta una cuenta de ${siteConfig.name}. Quien paga puede ser una persona distinta de quien recibe el servicio —por ejemplo, el contador de una clínica—.`,
+          "Cada enlace de pago tiene un vencimiento que se informa en la misma pantalla. Vencido, hay que iniciar la compra de nuevo.",
+          "<b>Medios de pago habilitados hoy:</b> transferencia bancaria. El checkout muestra los datos de la cuenta, y el pago se confirma de forma manual al verificar la acreditación, en días hábiles. Hasta esa confirmación, lo comprado no se activa.",
+          `Cuando se habiliten pagos con tarjeta u otros medios en línea, los procesará una procesadora de pagos habilitada en Paraguay, bajo sus propias condiciones. ${siteConfig.name} no es una entidad financiera ni una procesadora de pagos, y no recibe ni almacena los datos de tarjetas.`,
+          `En la sección de pagos de tu cuenta de ${siteConfig.name} podés consultar los pagos y las suscripciones que hiciste por este checkout.`,
+        ]),
+        p(
+          `Si un pago se acredita dos veces o por un importe mayor al debido por un error, lo devolvemos por transferencia a la cuenta de origen dentro de los treinta (30) días corridos siguientes a que se verifique. Si contratás como consumidor, conservás además los derechos que te reconoce la Ley N.º 1334/1998, incluido el de arrepentimiento en los casos y los plazos que ella fija.`,
+        ),
+      ],
+    },
+    {
+      id: "cuenta",
+      title: `8. Cuenta de ${siteConfig.name}`,
+      blocks: [
+        p(
+          `Una misma cuenta de ${siteConfig.name} da acceso a todos los productos del ecosistema: la persona se identifica por su correo electrónico, y cada producto decide después a qué organizaciones y con qué permisos entra.`,
+        ),
+        list([
+          "Cada persona es responsable de mantener su acceso bajo su control y de no compartirlo.",
+          "Los datos de la cuenta deben ser verdaderos y mantenerse actualizados.",
+          "Podemos suspender una cuenta usada para fraude, para suplantar a otra persona o para vulnerar la seguridad del servicio.",
+        ]),
+      ],
+    },
+    {
       id: "plazos",
-      title: "7. Plazos y colaboración",
+      title: "9. Plazos y colaboración",
       blocks: [
         p(
           "Los plazos que damos son estimados y se calculan asumiendo una colaboración razonable del cliente: accesos, contenidos, definiciones y respuestas dentro de los tiempos acordados.",
@@ -234,7 +299,7 @@ export const solvorxTerms: LegalDocument = {
     },
     {
       id: "titularidad-y-licencia",
-      title: "8. Titularidad del software, licencia y alojamiento",
+      title: "10. Titularidad del software, licencia y alojamiento",
       blocks: [
         p(
           "Cada propuesta indica bajo cuál de estas dos modalidades se entrega el trabajo. Se define antes de empezar, porque cambia qué se lleva el cliente al terminar:",
@@ -262,7 +327,7 @@ export const solvorxTerms: LegalDocument = {
     },
     {
       id: "confidencialidad",
-      title: "9. Confidencialidad",
+      title: "11. Confidencialidad",
       blocks: [
         p(
           "Toda la información no pública que las partes intercambien durante un proyecto es confidencial y no se comparte con terceros, salvo obligación legal o autorización escrita. Esta obligación sigue vigente después de terminado el proyecto.",
@@ -271,7 +336,7 @@ export const solvorxTerms: LegalDocument = {
     },
     {
       id: "datos-personales",
-      title: "10. Datos personales",
+      title: "12. Datos personales",
       blocks: [
         p(
           "Los datos de contacto que nos envíes por WhatsApp se usan únicamente para responder tu consulta y gestionar la eventual relación comercial. No los vendemos ni los cedemos con fines publicitarios.",
@@ -280,13 +345,16 @@ export const solvorxTerms: LegalDocument = {
           "Cuando en el marco de un proyecto tratamos datos personales que son del cliente, lo hacemos siguiendo sus instrucciones y solo para prestar el servicio contratado, alineados con la Ley N.º 7593/2025 de Protección de Datos Personales.",
         ),
         p(
+          `Para cobrar, el checkout registra de quien paga su nombre, correo electrónico, documento de identidad o RUC y teléfono. Los usamos para registrar el pago, emitir el comprobante y, cuando el medio elegido lo requiera, identificar a quien paga ante la procesadora de pagos, que recibe solo los datos necesarios para esa operación.`,
+        ),
+        p(
           `Podés pedir el acceso, la rectificación o la supresión de tus datos escribiéndonos por <a href="${waLink}" target="_blank" rel="noreferrer noopener">WhatsApp al ${siteConfig.whatsapp}</a> o a ${legalEntity.email}.`,
         ),
       ],
     },
     {
       id: "garantia",
-      title: "11. Garantía y soporte",
+      title: "13. Garantía y soporte",
       blocks: [
         p(
           "Corregimos sin costo los defectos atribuibles a nuestro desarrollo que se reporten dentro del plazo de garantía indicado en la propuesta.",
@@ -298,7 +366,7 @@ export const solvorxTerms: LegalDocument = {
     },
     {
       id: "responsabilidad",
-      title: "12. Limitación de responsabilidad",
+      title: "14. Limitación de responsabilidad",
       blocks: [
         p(
           `${siteConfig.name} responde por los daños directos comprobados que resulten de su incumplimiento, con un límite equivalente al monto efectivamente pagado por el cliente en los últimos doce meses por el servicio involucrado.`,
@@ -313,7 +381,7 @@ export const solvorxTerms: LegalDocument = {
     },
     {
       id: "productos",
-      title: "13. Productos del ecosistema",
+      title: "15. Productos del ecosistema",
       blocks: [
         p(
           `Además de los proyectos a medida, ofrecemos productos propios en modalidad de suscripción. <b>${dentuxConfig.name}</b>, nuestro software de gestión para clínicas odontológicas, se rige por sus propias condiciones: <a href="${dentuxConfig.termsPath}">términos y condiciones de ${dentuxConfig.name}</a>. En caso de contradicción entre ambos documentos, prevalecen las condiciones específicas del producto.`,
@@ -322,7 +390,7 @@ export const solvorxTerms: LegalDocument = {
     },
     {
       id: "cambios",
-      title: "14. Cambios en estas condiciones",
+      title: "16. Cambios en estas condiciones",
       blocks: [
         p(
           "Podemos actualizar estas condiciones. La versión vigente es siempre la publicada en esta página, con su fecha de última actualización. Los cambios no afectan de manera retroactiva a proyectos ya contratados, que se rigen por la versión aceptada al momento de la contratación.",
@@ -331,10 +399,10 @@ export const solvorxTerms: LegalDocument = {
     },
     {
       id: "ley-aplicable",
-      title: "15. Ley aplicable y jurisdicción",
+      title: "17. Ley aplicable y jurisdicción",
       blocks: applicableLaw("estas condiciones"),
     },
-    { ...contactSection("estas condiciones"), title: "16. Contacto" },
+    { ...contactSection("estas condiciones"), title: "18. Contacto" },
   ],
 };
 
@@ -345,7 +413,7 @@ export const dentuxTerms: LegalDocument = {
   title: `Términos y condiciones de ${dentuxConfig.name}`,
   description: `Condiciones de uso y contratación de ${dentuxConfig.name}, el software de gestión para clínicas odontológicas de ${siteConfig.name}.`,
   summary: `Estas condiciones regulan el uso de ${dentuxConfig.name}, el servicio de gestión odontológica de ${siteConfig.name}. Complementan los <a href="${solvorxTerms.path}">términos generales de ${siteConfig.name}</a>; ante una diferencia, manda este documento.`,
-  updatedAt: "2026-09-04",
+  updatedAt: "2026-09-30",
   sections: [
     {
       id: "partes",
@@ -355,7 +423,7 @@ export const dentuxTerms: LegalDocument = {
           `El servicio lo presta ${siteConfig.name} (el "prestador"), con los datos de identificación publicados en sus <a href="${solvorxTerms.path}#quienes-somos">términos generales</a>. Lo contrata una clínica odontológica o un profesional independiente (el "cliente" o la "organización").`,
         ),
         p(
-          `Al crear una organización en ${dentuxConfig.name} o al usar el servicio, el cliente acepta estas condiciones. Quien acepta declara tener facultades para obligar a la organización que representa.`,
+          `Al crear una organización en ${dentuxConfig.name}, al usar el servicio o al confirmar una compra en el checkout, el cliente acepta estas condiciones en la versión publicada en ese momento. Quien acepta declara tener facultades para obligar a la organización que representa.`,
         ),
       ],
     },
@@ -376,7 +444,7 @@ export const dentuxTerms: LegalDocument = {
       title: "3. Cuentas, usuarios y accesos",
       blocks: [
         p(
-          `El acceso al panel de la organización se hace con una cuenta del ecosistema ${siteConfig.name}. La organización decide a qué personas invita y con qué permisos.`,
+          `El acceso al panel de la organización se hace con una <a href="${solvorxTerms.path}#cuenta">cuenta de ${siteConfig.name}</a>. La organización decide a qué personas invita, con qué permisos y en qué orden, que es el que define quiénes entran dentro del límite de usuarios de su plan.`,
         ),
         list([
           "Cada usuario es responsable de su credencial y no debe compartirla.",
@@ -391,52 +459,109 @@ export const dentuxTerms: LegalDocument = {
     },
     {
       id: "planes",
-      title: "4. Planes y cupos",
+      title: "4. Planes y límites",
       blocks: [
         p(
-          `${dentuxConfig.name} se ofrece en planes. Cada plan incluye un cupo de mensajes de recordatorio por ciclo de facturación, diferenciado por canal (correo electrónico y SMS). El cupo se renueva al inicio de cada ciclo y lo no consumido no se acumula.`,
+          `${dentuxConfig.name} se ofrece en planes. Agenda, pacientes, portal del paciente, recordatorios automáticos y la compra de packs de mensajes están en todos; lo que cambia entre planes son estos límites:`,
+        ),
+        list(planLimits),
+        p(
+          "<b>Usuarios con acceso.</b> Cuentan las personas habilitadas de la organización, en el orden de la lista de usuarios que la organización administra; las deshabilitadas no ocupan lugar. Si hay más personas habilitadas que las que el plan permite, entran las primeras de la lista y el resto queda sin acceso hasta que se libere un lugar, se cambie el orden o se contrate un plan mayor. El cambio de plan aplica a este límite en el momento.",
         ),
         p(
-          "Cuando el cupo del ciclo se agota, la organización puede comprar saldo adicional de mensajes. Ese saldo es plata ya pagada: no vence al cerrar el ciclo y se conserva ante un cambio o una baja de plan. Se consume después de agotado el cupo del plan.",
+          "<b>Turnos por mes.</b> Se cuentan por mes calendario, según la fecha del turno. Una serie de turnos recurrentes cuenta como un solo turno. Alcanzado el tope, no se pueden agendar turnos nuevos para ese mes —ni desde el panel ni desde el portal del paciente—, y los ya agendados siguen igual.",
         ),
         p(
-          "Agotados el cupo y el saldo, los recordatorios automáticos dejan de enviarse hasta el ciclo siguiente o hasta que se compre saldo. El resto del servicio sigue funcionando con normalidad.",
+          "<b>Recordatorios.</b> Hoy se envían por correo electrónico. El cupo de cada plan se renueva al inicio de cada ciclo y lo no consumido no se acumula. Agotados el cupo y el saldo de mensajes comprado, los recordatorios automáticos dejan de enviarse hasta el ciclo siguiente o hasta que se compre saldo; el resto del servicio sigue funcionando con normalidad.",
+        ),
+      ],
+    },
+    {
+      id: "saldo-de-mensajes",
+      title: "5. Saldo de mensajes",
+      blocks: [
+        p(
+          "Además del cupo del plan, la organización puede comprar packs de mensajes de recordatorio con cualquier plan, incluido el gratuito. Cada pack es un pago único, no una suscripción:",
+        ),
+        list([
+          "El saldo comprado se acredita cuando se confirma el pago.",
+          "Se consume después de agotado el cupo del plan.",
+          "No vence al cerrar el ciclo y se conserva ante un cambio o una baja de plan.",
+          "Es de la organización a la que se acreditó: no se transfiere a otra organización ni se canjea por dinero.",
+        ]),
+      ],
+    },
+    {
+      id: "precios",
+      title: "6. Precios",
+      blocks: [
+        p(
+          "Los precios se expresan en guaraníes y se muestran en el panel y en el checkout antes de confirmar cada compra. Los impuestos aplicables se indican junto al precio.",
+        ),
+        p(
+          `El importe de una suscripción queda fijado al contratarla. Si aumentamos el precio de un plan, lo comunicamos a las organizaciones suscriptas con al menos ${subscriptionPolicy.priceChangeNoticeDays} días corridos de anticipación, y el nuevo importe recién se aplica al primer período que empiece después de ese plazo. Quien no esté de acuerdo puede darse de baja antes, sin penalidad.`,
+        ),
+        p(
+          `Podemos ofrecer precios promocionales —por ejemplo, para las primeras organizaciones que adopten ${dentuxConfig.name}—. Sus condiciones y su duración se informan al otorgarlos. Si la promoción tiene fecha de fin, al terminar se aplica el precio de lista con el mismo aviso previo.`,
         ),
       ],
     },
     {
       id: "pagos",
-      title: "5. Pagos y facturación",
+      title: "7. Cómo se paga",
       blocks: [
         p(
-          "<b>Estado actual:</b> los pagos en línea están en implementación con una pasarela de pagos local. Hasta que se habiliten, el alta, el cambio de plan y la compra de saldo se coordinan por WhatsApp y se abonan por el medio que se acuerde por escrito. Los precios vigentes se informan antes de contratar.",
+          `Los planes y los packs se contratan desde el panel de ${dentuxConfig.name} y se pagan en el checkout de ${siteConfig.name}, que se rige por la cláusula de <a href="${solvorxTerms.path}#pagos-en-linea">pagos en línea</a> de los términos generales:`,
         ),
+        list([
+          `Para pagar hace falta una cuenta de ${siteConfig.name}. Quien paga puede ser una persona distinta de la organización que recibe el plan.`,
+          "Abrir el enlace de pago no genera ningún cargo: la compra queda registrada al confirmarla en el checkout. Cada enlace tiene un vencimiento que se muestra en la misma pantalla.",
+          "<b>Medio de pago habilitado hoy:</b> transferencia bancaria, con confirmación manual al verificar la acreditación, en días hábiles. Hasta esa confirmación, ni el plan ni el saldo se activan.",
+          "Cuando se habiliten pagos con tarjeta u otros medios en línea, los informaremos en el checkout y en esta cláusula.",
+        ]),
         p(
-          "Cuando el pago en línea entre en funcionamiento, actualizaremos esta cláusula con los medios de pago aceptados, la moneda, la periodicidad del cobro, los reintentos ante un rechazo y las condiciones de reembolso, y lo comunicaremos a las organizaciones activas antes de aplicarlo.",
-        ),
-        p(
-          "Por cada pago se emite el comprobante legal correspondiente. Los impuestos aplicables se indican en el precio informado.",
+          "Por cada pago se emite el comprobante legal correspondiente, a nombre de los datos de facturación que indique quien paga.",
         ),
       ],
     },
     {
       id: "vigencia",
-      title: "6. Vigencia, mora y baja",
+      title: "8. Renovación y falta de pago",
       blocks: [
         p(
-          "La suscripción se renueva por períodos sucesivos mientras no se solicite la baja. La organización puede darse de baja en cualquier momento; la baja se hace efectiva al final del período ya pagado, sin devolución proporcional salvo que la ley disponga otra cosa.",
+          `La suscripción se contrata por períodos mensuales o anuales, según el plan, contados desde la fecha de alta, y se renueva por períodos iguales mientras no se pida la baja. El cobro de cada período se emite ${subscriptionPolicy.billingLeadDays} días antes de que venza el anterior y queda disponible en la cuenta de ${siteConfig.name} de quien paga.`,
+        ),
+        list([
+          `<b>Gracia:</b> durante los ${subscriptionPolicy.graceDays} días corridos siguientes al vencimiento, el servicio sigue igual.`,
+          `<b>Mora:</b> durante los ${subscriptionPolicy.dueDays} días corridos siguientes a la gracia, el servicio sigue funcionando con el plan contratado. Al empezar la mora, quien paga recibe un aviso por correo electrónico y el panel de la organización muestra el pago como pendiente.`,
+          `<b>Fin de la suscripción:</b> vencida la mora sin pago, la suscripción termina, se avisa por correo electrónico a quien paga y a la organización, y la organización pasa al plan gratuito. Se conservan los datos y el acceso al panel, con los límites de ese plan: si hay más usuarios de los que permite, solo mantiene el acceso el primero de la lista.`,
+        ]),
+        p(
+          "Si el primer pago de una suscripción nueva no se confirma dentro de su plazo, el alta se cancela sin generar deuda. Una suscripción terminada se puede volver a contratar desde el panel en cualquier momento.",
+        ),
+      ],
+    },
+    {
+      id: "cambios-de-plan-y-baja",
+      title: "9. Cambio de plan, baja y reembolsos",
+      blocks: [
+        p(
+          "Desde el plan gratuito, un plan pago se activa al confirmarse su primer pago. Con una suscripción en curso, el cambio a otro plan queda agendado y entra en vigencia al pagarse el período siguiente, sin prorrateos.",
         ),
         p(
-          "Ante una falta de pago se aplica un período de gracia durante el cual el servicio sigue disponible. Superado ese plazo, la suscripción se degrada al plan gratuito: se conservan los datos y el acceso al panel, y se pierden los beneficios del plan pago.",
+          `La organización puede pedir la baja en cualquier momento desde su cuenta de ${siteConfig.name}. La baja se hace efectiva al final del período ya pagado —hasta entonces el plan sigue activo— y desde ese momento no se emiten más cobros. No hay devolución proporcional del período en curso ni del saldo de mensajes ya comprado.`,
         ),
         p(
-          "Podemos suspender el servicio, con aviso previo, ante una falta de pago sostenida o un incumplimiento grave de estas condiciones.",
+          `Lo anterior no afecta la devolución de pagos duplicados o erróneos ni los derechos que la ley reconoce de forma imperativa a los consumidores, que se rigen por los <a href="${solvorxTerms.path}#pagos-en-linea">términos generales</a>.`,
+        ),
+        p(
+          "Podemos suspender el servicio, con aviso previo, ante un incumplimiento grave de estas condiciones.",
         ),
       ],
     },
     {
       id: "uso-aceptable",
-      title: "7. Uso aceptable",
+      title: "10. Uso aceptable",
       blocks: [
         p("La organización se compromete a no utilizar el servicio para:"),
         list([
@@ -450,7 +575,7 @@ export const dentuxTerms: LegalDocument = {
     },
     {
       id: "datos-de-pacientes",
-      title: "8. Datos de pacientes",
+      title: "11. Datos de pacientes",
       blocks: [
         p(
           "Los datos de los pacientes son de la organización. Ella es la responsable de esos datos: define qué carga, con qué finalidad y por cuánto tiempo, y es quien debe contar con el consentimiento o la base legal correspondiente.",
@@ -468,7 +593,7 @@ export const dentuxTerms: LegalDocument = {
     },
     {
       id: "comunicaciones",
-      title: "9. Recordatorios y comunicaciones al paciente",
+      title: "12. Recordatorios y comunicaciones al paciente",
       blocks: [
         p(
           "Los recordatorios se envían en nombre de la organización, a los contactos que ella cargó. Es responsabilidad de la organización que esos contactos sean correctos y que el paciente haya prestado su conformidad para recibirlos.",
@@ -480,7 +605,7 @@ export const dentuxTerms: LegalDocument = {
     },
     {
       id: "seguridad",
-      title: "10. Seguridad y confidencialidad",
+      title: "13. Seguridad y confidencialidad",
       blocks: [
         p(
           "Aplicamos medidas técnicas y organizativas razonables para proteger la información: cifrado en tránsito, control de accesos por organización, sesiones revocables y registros de actividad.",
@@ -492,7 +617,7 @@ export const dentuxTerms: LegalDocument = {
     },
     {
       id: "disponibilidad",
-      title: "11. Disponibilidad y soporte",
+      title: "14. Disponibilidad y soporte",
       blocks: [
         p(
           "Trabajamos para que el servicio esté disponible de forma continua, pero no comprometemos un nivel de disponibilidad garantizado (SLA) en esta etapa del producto.",
@@ -507,7 +632,7 @@ export const dentuxTerms: LegalDocument = {
     },
     {
       id: "propiedad-intelectual",
-      title: "12. Propiedad intelectual",
+      title: "15. Propiedad intelectual",
       blocks: [
         p(
           `${dentuxConfig.name}, su código, su diseño y su marca son de ${siteConfig.name}. El cliente recibe una licencia de uso no exclusiva, intransferible y limitada a la vigencia de su suscripción.`,
@@ -519,7 +644,7 @@ export const dentuxTerms: LegalDocument = {
     },
     {
       id: "terminacion",
-      title: "13. Terminación y datos al finalizar",
+      title: "16. Terminación y datos al finalizar",
       blocks: [
         p(
           "Al terminar la relación, la organización puede solicitar una copia de sus datos en un formato de uso corriente dentro de los treinta (30) días corridos siguientes.",
@@ -531,7 +656,7 @@ export const dentuxTerms: LegalDocument = {
     },
     {
       id: "cambios",
-      title: "14. Cambios en el servicio y en estas condiciones",
+      title: "17. Cambios en el servicio y en estas condiciones",
       blocks: [
         p(
           `${dentuxConfig.name} es un producto en evolución: podemos agregar, modificar o discontinuar funcionalidades. Si un cambio reduce de forma sustancial el servicio contratado, lo avisaremos con antelación razonable y la organización podrá darse de baja sin penalidad.`,
@@ -543,7 +668,7 @@ export const dentuxTerms: LegalDocument = {
     },
     {
       id: "responsabilidad",
-      title: "15. Limitación de responsabilidad",
+      title: "18. Limitación de responsabilidad",
       blocks: [
         p(
           "Nuestra responsabilidad total frente a la organización se limita al monto efectivamente pagado por el servicio en los doce (12) meses anteriores al hecho que la origine.",
@@ -558,10 +683,10 @@ export const dentuxTerms: LegalDocument = {
     },
     {
       id: "ley-aplicable",
-      title: "16. Ley aplicable y jurisdicción",
+      title: "19. Ley aplicable y jurisdicción",
       blocks: applicableLaw("el uso de " + dentuxConfig.name),
     },
-    { ...contactSection(dentuxConfig.name), title: "17. Contacto" },
+    { ...contactSection(dentuxConfig.name), title: "20. Contacto" },
   ],
 };
 

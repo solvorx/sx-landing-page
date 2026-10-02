@@ -44,9 +44,10 @@ export const metadata: Metadata = {
 const stripHtml = (html: string) => html.replace(/<[^>]+>/g, "");
 
 /**
- * Sin `offers`: los precios todavía no están definidos ni los cobros en línea
- * habilitados (ver `dentuxBillingNotice`). Un Offer sin precio real sería una
- * promesa que la página no cumple; se agrega cuando exista la lista de precios.
+ * Sin `offers`: la landing no publica precios (se ven en vivo en el panel y en
+ * el checkout, ver `dentuxBillingNotice`). Un Offer sin precio visible en la
+ * página sería una promesa que la página no cumple; se agrega cuando la lista
+ * de precios se publique acá.
  */
 const jsonLd = [
   {

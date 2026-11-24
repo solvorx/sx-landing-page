@@ -19,6 +19,11 @@ Landing page de SolvorX (Next.js 16 App Router, TypeScript, Tailwind v4, `motion
 | `/`                | Inicio: portada, servicios, proceso, FAQ, CTA.   |
 | `/dentux`           | Vista del SaaS DentuX (gestión odontológica).     |
 | `/terminos`        | Términos y condiciones de SolvorX.               |
+| `/privacidad`      | Política de Privacidad (cuenta, login, checkout). |
+| `/cookies`         | Política de Cookies.                             |
+| `/eliminar-cuenta` | Cómo eliminar la cuenta (URL que pide Google Play). |
+| `/soporte`         | Canales de soporte (URL que pide App Store).     |
+| `/encargo-de-datos` | Acuerdo de encargo de tratamiento (DPA, art. 11 Ley 7593). |
 | `/dentux/terminos`  | Términos y condiciones de DentuX.                 |
 
 ## Dónde tocar qué
@@ -31,11 +36,29 @@ Landing page de SolvorX (Next.js 16 App Router, TypeScript, Tailwind v4, `motion
   (usuarios, turnos por mes y cupo de correos) son **espejo del catálogo
   real** de `sx-dentux-service` (`prisma/seed.ts`, tabla `billing.plan`): si
   cambian allá, cambian acá. Los términos de DentuX los leen de ahí.
-- **Términos y condiciones**: [`src/lib/legal.ts`](src/lib/legal.ts) contiene
-  los dos documentos (SolvorX y DentuX) como datos;
-  [`LegalDoc.tsx`](src/components/legal/LegalDoc.tsx) solo los maqueta. Ese
-  componente **no usa `Reveal`** a propósito: una sección que aparece al hacer
-  scroll sale en blanco si alguien imprime la página sin recorrerla.
+- **Documentos legales**, todos como datos:
+  - [`legal.ts`](src/lib/legal.ts): términos de SolvorX y de DentuX, más lo
+    que comparten todos — tipos, `legalPaths`, `legalEntity`, `minimumAge` y
+    los helpers `p`, `list`, `table`.
+  - [`privacy.ts`](src/lib/privacy.ts): Política de Privacidad y de Cookies,
+    con las tablas `subprocessors`, `retention` y `cookies`.
+  - [`support.ts`](src/lib/support.ts): Eliminar mi cuenta y Soporte.
+  - [`dpa.ts`](src/lib/dpa.ts): Acuerdo de encargo de tratamiento.
+  - [`legal-documents.ts`](src/lib/legal-documents.ts): la lista de la que sale
+    el sitemap. Un documento nuevo va ahí, en `legalPaths` y en la columna
+    "Legal" de `footerLinks` (`site.ts`).
+  - [`LegalDoc.tsx`](src/components/legal/LegalDoc.tsx) los maqueta y
+    [`LegalPage.tsx`](src/components/legal/LegalPage.tsx) arma la página y la
+    metadata. `LegalDoc` **no usa `Reveal`** a propósito: una sección que
+    aparece al hacer scroll sale en blanco si alguien imprime la página sin
+    recorrerla.
+  - [`docs/legal/registro-de-tratamientos.md`](docs/legal/registro-de-tratamientos.md):
+    registro interno (no se publica) del que salen los textos y los
+    formularios de las tiendas.
+  - [`docs/legal/procedimiento-incidentes.md`](docs/legal/procedimiento-incidentes.md)
+    y [`docs/legal/procedimiento-derechos.md`](docs/legal/procedimiento-derechos.md):
+    cómo se atiende una brecha (aviso en 72 horas) y un pedido de derechos
+    (30 días), con su bitácora y su registro. Internos, no se publican.
 - **Geometría de la portada**: variables CSS de `.hero` en
   [`src/app/globals.css`](src/app/globals.css) (alto/posición del isotipo,
   arranque y ángulo de la diagonal, posición del titular). `--header-h` está
@@ -67,9 +90,40 @@ publica la lista de precios (se ve en vivo en el panel y en el checkout).
 
 ## Pendiente antes de publicar
 
-- **Revisión legal de los términos.** Los dos documentos de `src/lib/legal.ts`
-  son una base redactada a partir del producto real, no un texto revisado por
-  un abogado.
+- **Revisión legal de todos los documentos** (términos, privacidad, cookies,
+  eliminación de cuenta, soporte y encargo). Son una base redactada a partir
+  del producto real, no un texto revisado por un abogado. Puntos a confirmar:
+  - el plazo de arrepentimiento: se publicó el de la Ley 1334 (7 días
+    corridos), y la Ley 4868 (art. 30) fija 5 días hábiles;
+  - que la Ley 6822/2021 reemplazó por completo a la 4017/2010;
+  - los 5 años de conservación de pagos y comprobantes (normativa tributaria);
+  - si la Agencia Nacional de Protección de Datos ya funciona y si hace
+    falta delegado de protección de datos (depende del decreto reglamentario
+    de la Ley 7593).
+- **Que lo publicado sea verdad.** La Política de Privacidad describe el
+  sistema como queda con la rama `feat/SX-73/legals` desplegada. Antes de
+  publicarla:
+  - desplegar esa rama en sx-management-service (migraciones primero), identity,
+    account y console. Trae: límite de intentos del OTP, enmascarado de los
+    registros técnicos, `/userinfo` acotado a los scopes, aceptación con versión
+    y edad, consentimiento para apps de terceros, "Apps conectadas",
+    eliminación con anonimización, "Descargar mis datos", Comunicaciones,
+    Actividad de seguridad y los pies legales;
+  - programar en Cloud Scheduler (una vez por día) el job
+    `POST /v1/external/job/purge-personal-data` de sx-management-service: sin
+    él no se cumplen los plazos de sesiones, códigos, auditoría y eventos de
+    seguridad que publica `retention`;
+  - los plazos que siguen sin implementar: TTL de `request_trace` a 30 días en
+    prod, y la purga de las constancias a los 5 años de eliminada la cuenta;
+  - confirmar la región de MongoDB Atlas y de Upstash (`subprocessors`
+    marcados `pending`, que hoy se muestran como "A confirmar");
+  - confirmar que Neon hace respaldos (lo afirma el acuerdo de encargo).
+- **Versiones de los textos.** Las de `constant.legal` en
+  sx-management-service tienen que ser el `updatedAt` de los Términos
+  (`legal.ts`) y de la Privacidad (`privacy.ts`): si cambia un texto, cambia la
+  versión allá y todos lo vuelven a aceptar en su próximo login.
+- **Procedimientos internos** (`docs/legal/`): el de incidentes y el de pedidos
+  de los titulares tienen que tener responsables con nombre antes de publicar.
 - **Decidir la modalidad de entrega** de la sección "Titularidad del software":
   hoy el texto cubre las dos (cesión al cliente vs. licencia con alojamiento
   propio) y deja la licencia como supletoria.

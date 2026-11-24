@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { dentuxConfig } from "@/lib/dentux";
-import { legalDocuments } from "@/lib/legal";
+import { legalDocuments } from "@/lib/legal-documents";
 import { siteConfig } from "@/lib/site";
 
 export default function sitemap(): MetadataRoute.Sitemap {

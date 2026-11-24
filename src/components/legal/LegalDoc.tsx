@@ -13,9 +13,9 @@ const linkStyles =
 
 /**
  * Documento legal: encabezado con la fecha de vigencia, índice lateral fijo y
- * el articulado. El contenido llega entero desde `src/lib/legal.ts`; este
- * componente solo lo maqueta, así que sirve igual para los términos de
- * SolvorX y para los de DentuX.
+ * el articulado. El contenido llega entero desde `src/lib/` (legal.ts,
+ * privacy.ts, support.ts, dpa.ts); este componente solo lo maqueta, así que
+ * sirve igual para todos los documentos legales.
  */
 export function LegalDoc({
   document,
@@ -114,6 +114,45 @@ export function LegalDoc({
                         className={`text-sm leading-relaxed text-brand-slate/70 ${linkStyles}`}
                         dangerouslySetInnerHTML={{ __html: block.text }}
                       />
+                    ) : block.type === "table" ? (
+                      /* El scroll horizontal queda dentro del bloque: en un
+                         teléfono la tabla se desliza sin mover la página. */
+                      <div
+                        key={i}
+                        className="overflow-x-auto rounded-xl border border-brand-ink/10"
+                      >
+                        <table className="w-full min-w-[32rem] border-collapse text-left text-sm">
+                          <thead className="bg-brand-ink/[0.03]">
+                            <tr>
+                              {block.head.map((cell) => (
+                                <th
+                                  key={cell}
+                                  scope="col"
+                                  className="px-4 py-3 font-display text-xs font-semibold text-brand-ink"
+                                >
+                                  {cell}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {block.rows.map((row) => (
+                              <tr
+                                key={row.join("|")}
+                                className="border-t border-brand-ink/8 align-top"
+                              >
+                                {row.map((cell, j) => (
+                                  <td
+                                    key={j}
+                                    className={`px-4 py-3 leading-relaxed text-brand-slate/70 ${linkStyles}`}
+                                    dangerouslySetInnerHTML={{ __html: cell }}
+                                  />
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     ) : (
                       <ul key={i} className="space-y-2">
                         {block.items.map((item) => (

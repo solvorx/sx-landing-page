@@ -1,9 +1,12 @@
 /**
  * Términos y condiciones — BASE para revisión legal.
  *
- * Este archivo es la fuente de verdad de los dos documentos legales del sitio:
- * los de SolvorX (`/terminos`, enlazados desde el inicio) y los de DentuX
- * (`/dentux/terminos`, enlazados desde la vista del producto). Los renderiza
+ * Este archivo es la fuente de verdad de los términos del sitio —los de
+ * SolvorX (`/terminos`) y los de DentuX (`/dentux/terminos`)— y de los tipos,
+ * helpers y datos del prestador que comparten todos los documentos legales.
+ * El resto vive al lado: privacidad y cookies en `privacy.ts`, eliminación de
+ * cuenta y soporte en `support.ts`, el acuerdo de encargo en `dpa.ts`; la
+ * lista completa (rutas, sitemap) en `legal-documents.ts`. Los renderiza
  * `components/legal/LegalDoc.tsx`.
  *
  * Espejos de otros repos (si cambian allá, cambian acá y se mueve `updatedAt`):
@@ -76,7 +79,32 @@ export const legalEntity = {
 
 export type LegalBlock =
   | { type: "p"; text: string }
-  | { type: "list"; items: string[] };
+  | { type: "list"; items: string[] }
+  /** Tabla simple: encabezado + filas de texto (admiten el mismo HTML que `p`). */
+  | { type: "table"; head: string[]; rows: string[][] };
+
+/**
+ * Rutas de todos los documentos legales. Viven acá y no en cada documento para
+ * que los textos puedan enlazarse entre sí sin importarse en círculo.
+ */
+export const legalPaths = {
+  terms: "/terminos",
+  privacy: "/privacidad",
+  cookies: "/cookies",
+  accountDeletion: "/eliminar-cuenta",
+  support: "/soporte",
+  dpa: "/encargo-de-datos",
+} as const;
+
+/**
+ * Edad mínima para tener una cuenta: la de la capacidad plena para contratar
+ * (Ley N.º 2169/2003). No se admite la franja de 16 a 17 con autorización de
+ * los padres: verificar esa autorización no es viable, y los pacientes de
+ * DentuX entran con enlaces de un solo uso, sin cuenta. Espejo de
+ * `constant.legal.minimumAge` en sx-management-service, que la exige al
+ * registrarse y en cada aceptación de los textos.
+ */
+export const minimumAge = 18;
 
 export type LegalSection = {
   /** Ancla del índice: tiene que ser único dentro del documento. */
@@ -97,14 +125,22 @@ export type LegalDocument = {
   sections: LegalSection[];
 };
 
-const p = (text: string): LegalBlock => ({ type: "p", text });
-const list = (items: string[]): LegalBlock => ({ type: "list", items });
+export const p = (text: string): LegalBlock => ({ type: "p", text });
+export const list = (items: string[]): LegalBlock => ({ type: "list", items });
+export const table = (head: string[], rows: string[][]): LegalBlock => ({
+  type: "table",
+  head,
+  rows,
+});
+
+/** Enlace a WhatsApp con el formato que usan todos los documentos. */
+export const whatsappLink = `<a href="${waLink}" target="_blank" rel="noreferrer noopener">WhatsApp al ${siteConfig.whatsapp}</a>`;
 
 /**
  * Identificación del prestador. WhatsApp es el único canal de contacto
  * habilitado: no hay casilla de correo publicada.
  */
-const identification: string[] = [
+export const identification: string[] = [
   `Nombre comercial: ${siteConfig.name}`,
   legalEntity.name && `Razón social: ${legalEntity.name}`,
   legalEntity.taxId && `RUC: ${legalEntity.taxId}`,
@@ -114,20 +150,25 @@ const identification: string[] = [
 ].filter((line): line is string => line.length > 0);
 
 /**
+ * La Ley N.º 6822/2021 (servicios de confianza, documento y firma electrónica)
+ * es la que hoy da validez a la aceptación por medios electrónicos; la versión
+ * anterior de este documento citaba la Ley N.º 4017/2010. Confirmar con el
+ * abogado que la 6822 la reemplazó por completo.
+ *
  * OJO al actualizar: la Ley N.º 1682/2001 (que citaba la versión anterior de
  * este documento) fue DEROGADA por la Ley N.º 6534/2020, que a su vez solo
  * regula datos crediticios. El marco general vigente es la Ley N.º 7593/2025,
  * promulgada el 27/11/2025 con dos años de vacatio legis: rige plenamente
  * desde noviembre de 2027, y hasta entonces sirve como estándar de referencia.
  */
-const applicableLaw = (subject: string): LegalBlock[] => [
+export const applicableLaw = (subject: string): LegalBlock[] => [
   p(
     `Estas condiciones se rigen por las leyes de la ${legalEntity.jurisdiction}, en particular:`,
   ),
   list([
     "Ley N.º 1334/1998 de Defensa del Consumidor y del Usuario, y sus modificatorias.",
     "Ley N.º 4868/2013 de Comercio Electrónico y su Decreto Reglamentario N.º 1165/2014.",
-    "Ley N.º 4017/2010, modificada y ampliada por la Ley N.º 4610/2012, sobre validez jurídica de la firma electrónica, la firma digital, los mensajes de datos y el expediente electrónico.",
+    "Ley N.º 6822/2021 de los Servicios de Confianza para las Transacciones Electrónicas, del Documento Electrónico y los Documentos Transmisibles Electrónicos.",
     "Ley N.º 1328/1998 de Derecho de Autor y Derechos Conexos, y su Decreto Reglamentario N.º 5159/1999.",
     "Ley N.º 7593/2025 de Protección de Datos Personales, promulgada el 27 de noviembre de 2025. Su plena vigencia opera en noviembre de 2027, tras el plazo de adecuación de dos años que la propia ley establece; hasta entonces la tomamos como estándar de referencia para el tratamiento de datos.",
   ]),
@@ -160,12 +201,12 @@ const planLimits: string[] = dentuxPlans.map((plan) => {
   return `<b>${plan.name}:</b> ${users}, hasta ${formatNumber(plan.maxAppointmentsPerMonth)} turnos por mes y ${formatNumber(plan.quota.email)} recordatorios por correo electrónico por ciclo.`;
 });
 
-const contactSection = (subject: string): LegalSection => ({
+export const contactSection = (subject: string): LegalSection => ({
   id: "contacto",
   title: "Contacto",
   blocks: [
     p(
-      `Para cualquier consulta sobre ${subject}, incluido el ejercicio de derechos sobre datos personales, escribinos por <a href="${waLink}" target="_blank" rel="noreferrer noopener">WhatsApp al ${siteConfig.whatsapp}</a>, que es nuestro canal de atención habitual, o a ${legalEntity.email} si preferís dejar constancia por escrito. Respondemos por el mismo medio en un plazo razonable.`,
+      `Para cualquier consulta sobre ${subject} escribinos por ${whatsappLink}, que es nuestro canal de atención habitual, o a ${legalEntity.email} si preferís dejar constancia por escrito. Respondemos por el mismo medio. Los pedidos sobre datos personales se responden dentro de los plazos de la <a href="${legalPaths.privacy}#derechos">Política de Privacidad</a>.`,
     ),
   ],
 });
@@ -173,11 +214,11 @@ const contactSection = (subject: string): LegalSection => ({
 /* ============================ SolvorX ============================ */
 
 export const solvorxTerms: LegalDocument = {
-  path: "/terminos",
+  path: legalPaths.terms,
   title: "Términos y condiciones",
   description: `Términos y condiciones de uso del sitio y de contratación de los servicios de ${siteConfig.name} en Paraguay.`,
-  summary: `Estas condiciones regulan el uso de este sitio y la contratación de los servicios de ${siteConfig.name}. Están escritas en lenguaje simple a propósito: si algo no queda claro, preguntanos antes de contratar.`,
-  updatedAt: "2026-09-30",
+  summary: `Estas condiciones regulan el uso de este sitio, de la cuenta de ${siteConfig.name} y la contratación de sus servicios. Están escritas en lenguaje simple a propósito: si algo no queda claro, preguntanos antes de contratar. Cómo tratamos tus datos está en la <a href="${legalPaths.privacy}">Política de Privacidad</a>.`,
+  updatedAt: "2026-11-23",
   sections: [
     {
       id: "quienes-somos",
@@ -194,7 +235,10 @@ export const solvorxTerms: LegalDocument = {
       title: "2. Aceptación",
       blocks: [
         p(
-          `Al navegar este sitio o contratar un servicio de ${siteConfig.name} aceptás estas condiciones en la versión publicada al momento del uso o de la contratación. Si no estás de acuerdo, no uses el sitio ni contrates los servicios.`,
+          `Al navegar este sitio, crear una cuenta de ${siteConfig.name} o contratar un servicio aceptás estas condiciones en la versión publicada al momento del uso o de la contratación. Si no estás de acuerdo, no uses el sitio ni contrates los servicios.`,
+        ),
+        p(
+          "Cuando la aceptación se hace en línea —al crear la cuenta o al confirmar una compra— guardamos la versión aceptada, la fecha y la hora, como constancia de la conformidad expresada por medios electrónicos.",
         ),
       ],
     },
@@ -230,7 +274,7 @@ export const solvorxTerms: LegalDocument = {
           "El proceso es siempre el mismo: conversamos el problema, enviamos una propuesta escrita con alcance, plazo estimado y precio, y el trabajo empieza cuando esa propuesta queda aceptada.",
         ),
         p(
-          "La aceptación se hace por WhatsApp. Conforme a la Ley N.º 4017/2010, esa conformidad por medios electrónicos tiene plena validez entre las partes.",
+          "La aceptación se hace por WhatsApp. Conforme a la Ley N.º 6822/2021, esa conformidad por medios electrónicos tiene plena validez entre las partes.",
         ),
         p(
           "Lo que no está descrito en la propuesta aceptada no está incluido. Todo pedido adicional se cotiza aparte antes de ejecutarse.",
@@ -267,7 +311,10 @@ export const solvorxTerms: LegalDocument = {
           `En la sección de pagos de tu cuenta de ${siteConfig.name} podés consultar los pagos y las suscripciones que hiciste por este checkout.`,
         ]),
         p(
-          `Si un pago se acredita dos veces o por un importe mayor al debido por un error, lo devolvemos por transferencia a la cuenta de origen dentro de los treinta (30) días corridos siguientes a que se verifique. Si contratás como consumidor, conservás además los derechos que te reconoce la Ley N.º 1334/1998, incluido el de arrepentimiento en los casos y los plazos que ella fija.`,
+          `Si un pago se acredita dos veces o por un importe mayor al debido por un error, lo devolvemos por transferencia a la cuenta de origen dentro de los treinta (30) días corridos siguientes a que se verifique.`,
+        ),
+        p(
+          `<b>Derecho de arrepentimiento.</b> Si contratás como consumidor, podés arrepentirte de una compra hecha en línea dentro de los siete (7) días corridos siguientes a su confirmación, sin necesidad de justificarlo y sin costo (art. 26 de la Ley N.º 1334/1998). Avisanos por los canales de contacto y te devolvemos lo pagado por el mismo medio dentro de los treinta (30) días corridos siguientes al aviso.`,
         ),
       ],
     },
@@ -279,9 +326,11 @@ export const solvorxTerms: LegalDocument = {
           `Una misma cuenta de ${siteConfig.name} da acceso a todos los productos del ecosistema: la persona se identifica por su correo electrónico, y cada producto decide después a qué organizaciones y con qué permisos entra.`,
         ),
         list([
+          `Para crear una cuenta hay que tener al menos ${minimumAge} años, y declararlo al registrarse.`,
           "Cada persona es responsable de mantener su acceso bajo su control y de no compartirlo.",
           "Los datos de la cuenta deben ser verdaderos y mantenerse actualizados.",
-          "Podemos suspender una cuenta usada para fraude, para suplantar a otra persona o para vulnerar la seguridad del servicio.",
+          "Podemos suspender una cuenta usada para fraude, para suplantar a otra persona o para vulnerar la seguridad del servicio. Salvo que la urgencia lo impida, avisamos antes y explicamos el motivo.",
+          `Podés eliminar tu cuenta cuando quieras, siguiendo los pasos de <a href="${legalPaths.accountDeletion}">Eliminar mi cuenta</a>.`,
         ]),
       ],
     },
@@ -339,16 +388,10 @@ export const solvorxTerms: LegalDocument = {
       title: "12. Datos personales",
       blocks: [
         p(
-          "Los datos de contacto que nos envíes por WhatsApp se usan únicamente para responder tu consulta y gestionar la eventual relación comercial. No los vendemos ni los cedemos con fines publicitarios.",
+          `Cómo tratamos los datos de quienes usan el sitio, la cuenta de ${siteConfig.name} y el checkout —qué datos, para qué, con quién los compartimos, cuánto tiempo los guardamos y cómo ejercer tus derechos— está en la <a href="${legalPaths.privacy}">Política de Privacidad</a>, que forma parte de estas condiciones. No vendemos datos personales ni los cedemos con fines publicitarios.`,
         ),
         p(
-          "Cuando en el marco de un proyecto tratamos datos personales que son del cliente, lo hacemos siguiendo sus instrucciones y solo para prestar el servicio contratado, alineados con la Ley N.º 7593/2025 de Protección de Datos Personales.",
-        ),
-        p(
-          `Para cobrar, el checkout registra de quien paga su nombre, correo electrónico, documento de identidad o RUC y teléfono. Los usamos para registrar el pago, emitir el comprobante y, cuando el medio elegido lo requiera, identificar a quien paga ante la procesadora de pagos, que recibe solo los datos necesarios para esa operación.`,
-        ),
-        p(
-          `Podés pedir el acceso, la rectificación o la supresión de tus datos escribiéndonos por <a href="${waLink}" target="_blank" rel="noreferrer noopener">WhatsApp al ${siteConfig.whatsapp}</a> o a ${legalEntity.email}.`,
+          `Cuando en el marco de un proyecto o de un producto tratamos datos personales que son del cliente, actuamos como encargado del tratamiento: seguimos sus instrucciones y solo los usamos para prestar el servicio contratado, en los términos del <a href="${legalPaths.dpa}">Acuerdo de encargo de tratamiento de datos</a>.`,
         ),
       ],
     },
@@ -375,7 +418,7 @@ export const solvorxTerms: LegalDocument = {
           "No respondemos por lucro cesante, pérdida de datos imputable a terceros, ni por interrupciones de servicios de infraestructura, conectividad o proveedores externos.",
         ),
         p(
-          "Ninguna cláusula de este documento limita los derechos que la ley reconoce de forma imperativa a los consumidores.",
+          "Estos límites no se aplican a los daños causados con dolo o culpa grave, y ninguna cláusula de este documento limita los derechos que la ley reconoce de forma imperativa a los consumidores.",
         ),
       ],
     },
@@ -395,6 +438,9 @@ export const solvorxTerms: LegalDocument = {
         p(
           "Podemos actualizar estas condiciones. La versión vigente es siempre la publicada en esta página, con su fecha de última actualización. Los cambios no afectan de manera retroactiva a proyectos ya contratados, que se rigen por la versión aceptada al momento de la contratación.",
         ),
+        p(
+          `Si un cambio afecta a quienes tienen una cuenta o una suscripción, lo avisamos por correo electrónico o dentro de la cuenta con al menos quince (15) días corridos de anticipación. Quien no esté de acuerdo puede dar de baja la suscripción o eliminar la cuenta antes de que el cambio entre en vigencia, sin penalidad. El silencio no se toma como aceptación de un cambio que te perjudique: en ese caso te vamos a pedir que lo aceptes de forma expresa.`,
+        ),
       ],
     },
     {
@@ -402,7 +448,16 @@ export const solvorxTerms: LegalDocument = {
       title: "17. Ley aplicable y jurisdicción",
       blocks: applicableLaw("estas condiciones"),
     },
-    { ...contactSection("estas condiciones"), title: "18. Contacto" },
+    {
+      ...contactSection("estas condiciones"),
+      title: "18. Contacto y reclamos",
+      blocks: [
+        ...contactSection("estas condiciones").blocks,
+        p(
+          "Si contratás como consumidor y no quedás conforme con nuestra respuesta, podés presentar tu reclamo ante la Secretaría de Defensa del Consumidor y el Usuario (SEDECO), sin perjuicio de las demás vías que te reconoce la ley.",
+        ),
+      ],
+    },
   ],
 };
 
@@ -689,5 +744,3 @@ export const dentuxTerms: LegalDocument = {
     { ...contactSection(dentuxConfig.name), title: "20. Contacto" },
   ],
 };
-
-export const legalDocuments = [solvorxTerms, dentuxTerms];

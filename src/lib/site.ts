@@ -199,8 +199,14 @@ export const footerLinks = [
   },
   {
     title: "Legal",
+    // Espejo de `legalPaths` (legal.ts), que no se importa acá porque legal.ts ya importa este archivo.
     links: [
       { label: "Términos y condiciones", href: "/terminos" },
+      { label: "Política de privacidad", href: "/privacidad" },
+      { label: "Cookies", href: "/cookies" },
+      { label: "Eliminar mi cuenta", href: "/eliminar-cuenta" },
+      { label: "Soporte", href: "/soporte" },
+      { label: "Encargo de datos", href: "/encargo-de-datos" },
       { label: "Términos de DentuX", href: "/dentux/terminos" },
     ],
   },
